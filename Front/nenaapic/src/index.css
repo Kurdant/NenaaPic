@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import fonts from Google */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap');
+
+:root {
+  /* Couleurs principales */
+  --primary-blue: #4A90E2;
+  --primary-yellow: #F7DC6F;
+  --deep-blue: #1A2B4A;
+  --light-cream: #FAF8F5;
+  
+  /* Couleurs d'accent */
+  --accent-purple: #8B7AB8;
+  --accent-coral: #FF9F87;
+  --accent-mint: #A8E6CF;
+  --gold-line: #D4AF37;
+  
+  /* Couleurs neutres */
+  --white: #FFFFFF;
+  --off-white: #FDFCFA;
+  --text-dark: #2C2C2C;
+  --text-light: #6B6B6B;
+  --border-subtle: #E8E4DD;
+}
+
+body {
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  color: var(--text-dark);
+  background-color: var(--off-white);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+/* Lignes décoratives */
+.decorative-line {
+  position: absolute;
+  width: 100px;
+  height: 2px;
+  background: var(--gold-line);
+}
+
+.decorative-circle {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border: 2px solid var(--gold-line);
+  border-radius: 50%;
+}
+
+.bg-black-10 {
+  background-color: rgb(0 0 0 / 10%);
+}
