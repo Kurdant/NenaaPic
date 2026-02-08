@@ -44,7 +44,6 @@ const HomePage = () => {
       {/* 3. Section Carrousel 3D */}
       <Slider3D />
       
-
       {/* 4. Section Services + Image Déco 2 */}
       <ServicesSection />
 

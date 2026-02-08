@@ -44,7 +44,7 @@ const Slider3D = () => {
     },
     {
       id: 6,
-      image: '/images/banner_1.jpg',
+      image: '/images/banner.jpg',
       title: 'VOTRE VISION',
       subtitle: 'Transformée en œuvre d\'art',
       badge: '#Créatif'
@@ -91,9 +91,10 @@ const Slider3D = () => {
 
     const isCenter = position === 0;
 
-    // Dimensions de la carte (format portrait 2:3)
-    const cardW = 300;
-    const cardH = 450;
+    // Dimensions de la carte - responsive
+    const isMobile = window.innerWidth < 768;
+    const cardW = isMobile ? 250 : 300;
+    const cardH = isMobile ? 350 : 450;
 
     // Échelle progressive très marquée
     let scale;

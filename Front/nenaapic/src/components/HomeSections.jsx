@@ -12,14 +12,14 @@ const AboutSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Contenu Texte */}
           <div className="text-white space-y-8">
-            <h2 className="text-6xl font-bold tracking-wide mb-6">
+            <h2 className="text-6xl font-bold tracking-wide mb-6" style={{ textShadow: '0 2px 10px rgba(0, 0, 0, 0.5), 0 4px 20px rgba(0, 0, 0, 0.3)' }}>
               HERE'S TO<br />LIFE
             </h2>
-            <p className="text-lg font-light leading-relaxed opacity-90">
+            <p className="text-lg font-light leading-relaxed opacity-90" style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}>
               Photographe passionnée basée à Nice, je capture l'essence de vos moments les plus précieux. 
               Chaque cliché raconte une histoire unique, empreinte d'émotion et d'authenticité.
             </p>
-            <p className="text-lg font-light leading-relaxed opacity-90">
+            <p className="text-lg font-light leading-relaxed opacity-90" style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}>
               Mon approche artistique combine technique professionnelle et sensibilité créative 
               pour créer des images intemporelles qui vous ressemblent.
             </p>
@@ -54,59 +54,87 @@ const AboutSection = () => {
 
 const ServicesSection = () => {
   const services = [
-    { name: 'Mariages', description: 'Immortaliser le plus beau jour de votre vie' },
-    { name: 'Portraits', description: 'Révéler votre personnalité unique' },
-    { name: 'Entreprise', description: 'Valoriser votre image professionnelle' },
-    { name: 'Couples', description: 'Capturer votre histoire d\'amour' }
+    { 
+      name: 'Mariages', 
+      description: 'Immortaliser le plus beau jour de votre vie',
+      image: '/images/service-1.jpg'
+    },
+    { 
+      name: 'Portraits', 
+      description: 'Révéler votre personnalité unique',
+      image: '/images/service-2.jpg'
+    },
+    { 
+      name: 'Entreprise', 
+      description: 'Valoriser votre image professionnelle',
+      image: '/images/service-3.jpg'
+    },
+    { 
+      name: 'Couples', 
+      description: 'Capturer votre histoire d\'amour',
+      image: '/images/service-4.jpg'
+    }
   ];
 
   return (
     <section 
       className="py-32 px-8 relative overflow-hidden"
-      style={{ backgroundColor: '#FFF9E6' }}
+      style={{ 
+        background: 'linear-gradient(135deg, #2a2d3a 0%, #3d4158 50%, #2f3241 100%)'
+      }}
     >
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Image Déco 2 */}
-          <div className="relative order-2 lg:order-1">
-            <div className="overflow-hidden rounded-lg shadow-2xl transform hover:scale-105 transition-all duration-500">
+          {/* Image principale à gauche - Hidden sur tablette et mobile */}
+          <div className="relative hidden lg:block order-1">
+            <div className="overflow-hidden rounded-2xl shadow-2xl">
               <img
                 src="/images/image_deco_2.jpg"
                 alt="Services NenaaPic"
-                className="w-full h-[600px] object-cover"
+                className="w-full h-[700px] object-cover"
               />
-            </div>
-            
-            {/* Ligne décorative bleue */}
-            <div className="absolute top-4 right-4">
-              <svg className="w-24 h-24 opacity-60" viewBox="0 0 100 100">
-                <line x1="20" y1="0" x2="20" y2="100" stroke="#4A90E2" strokeWidth="2"/>
-                <line x1="0" y1="20" x2="100" y2="20" stroke="#4A90E2" strokeWidth="2"/>
-              </svg>
             </div>
           </div>
 
-          {/* Contenu Services */}
-          <div className="order-1 lg:order-2 space-y-8">
-            <h2 className="text-6xl font-bold tracking-wide mb-12" style={{ color: '#1A2B4A' }}>
-              OUR<br />SERVICES
-            </h2>
-            
-            <div className="space-y-6">
-              {services.map((service, index) => (
-                <div 
-                  key={index}
-                  className="bg-white/50 backdrop-blur-sm p-6 rounded-lg hover:bg-white transition-all duration-300 hover:shadow-lg"
-                >
-                  <h3 className="text-2xl font-bold mb-2" style={{ color: '#1A2B4A' }}>
-                    {service.name}
-                  </h3>
-                  <p className="text-gray-700 font-light">
-                    {service.description}
-                  </p>
+          {/* Grid de 4 cards à droite - 2x2 */}
+          <div className="order-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {services.map((service, index) => (
+              <div 
+                key={index}
+                className="group relative overflow-hidden rounded-2xl p-6"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  backdropFilter: 'blur(12px)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  boxShadow: 'inset 0 0 20px rgba(255, 255, 255, 0.05), 0 8px 32px rgba(0, 0, 0, 0.3)',
+                }}
+              >
+                {/* Image avec effet hover */}
+                <div className="mb-4 overflow-hidden rounded-xl h-40">
+                  <img
+                    src={service.image}
+                    alt={service.name}
+                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110 group-hover:rotate-2"
+                  />
                 </div>
-              ))}
-            </div>
+
+                {/* Titre */}
+                <h3 
+                  className="text-2xl font-bold mb-2 text-white"
+                  style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
+                >
+                  {service.name}
+                </h3>
+
+                {/* Description */}
+                <p 
+                  className="text-white/80 font-light"
+                  style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
+                >
+                  {service.description}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -142,7 +170,7 @@ const PortfolioSection = () => {
             <h2 className="text-6xl font-bold tracking-wide" style={{ color: '#1A2B4A' }}>
               PORTFOLIO
             </h2>
-            <p className="text-lg font-light text-gray-700 leading-relaxed">
+          <p className="text-lg font-light text-gray-700 leading-relaxed" style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}>
               Découvrez une sélection de mes meilleurs travaux. 
               Chaque projet est unique et raconte une histoire différente.
             </p>
@@ -230,13 +258,13 @@ const MissionSection = () => {
             <h2 className="text-6xl font-bold tracking-wide mb-6">
               THIS IS THE<br />PERFECT PLACE<br />FOR YOUR BUSINESS
             </h2>
-            <h3 className="text-3xl font-semibold mb-4">MISSION STATEMENT</h3>
-            <p className="text-lg font-light leading-relaxed">
+            <h3 className="text-3xl font-semibold mb-4" style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}>MISSION STATEMENT</h3>
+            <p className="text-lg font-light leading-relaxed" style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}>
               Ma mission est de créer des images qui transcendent le temps. 
               Je crois en la puissance de la photographie pour capturer l'émotion brute 
               et raconter des histoires authentiques.
             </p>
-            <p className="text-lg font-light leading-relaxed">
+            <p className="text-lg font-light leading-relaxed" style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}>
               Chaque client est unique, et mon approche personnalisée garantit 
               que votre vision prenne vie à travers mon objectif.
             </p>
@@ -261,13 +289,13 @@ const TestimonialSection = () => {
               <path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/>
             </svg>
             
-            <h2 className="text-5xl font-bold italic leading-tight mb-8">
+            <h2 className="text-5xl font-bold italic leading-tight mb-8" style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}>
               "IT WAS JUST<br />DIVINE WORKING<br />WITH THEM!"
             </h2>
             
             <div className="space-y-2">
-              <p className="text-xl font-medium">Sarah & Thomas</p>
-              <p className="text-gray-400 font-light">Mariage - Juillet 2025</p>
+              <p className="text-xl font-medium" style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}>Sarah & Thomas</p>
+              <p className="text-gray-400 font-light" style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}>Mariage - Juillet 2025</p>
             </div>
 
             {/* Ligne décorative coral */}
