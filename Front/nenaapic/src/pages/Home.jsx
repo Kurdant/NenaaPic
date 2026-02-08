@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import HeroBannerV2 from '../components/HeroBannerV2';
-import PhotosDesordre from '../components/PhotosDesordre';
+import Slider3D from '../components/Slider3D';
 import { 
   AboutSection, 
   ServicesSection, 
@@ -41,8 +41,8 @@ const HomePage = () => {
       {/* 2. Section à propos */}
       <AboutSection />
 
-      {/* 3. Section Photos en Désordre + Image Déco 1 */}
-      <PhotosDesordre />
+      {/* 3. Section Carrousel 3D */}
+      <Slider3D />
       
 
       {/* 4. Section Services + Image Déco 2 */}

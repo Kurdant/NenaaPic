@@ -103,7 +103,7 @@ const PhotosDesordre = () => {
         return { display: 'none' };
       }
       scale = isCenter ? 1 : 1 - Math.abs(position) * 0.2;
-      translateX = position * 280;
+      translateX = position * 420;
       translateZ = isCenter ? 0 : -Math.abs(position) * 150;
       opacity = isCenter ? 1 : 1 - Math.abs(position) * 0.3;
       zIndex = 10 - Math.abs(position);
@@ -113,7 +113,7 @@ const PhotosDesordre = () => {
         return { display: 'none' };
       }
       scale = isCenter ? 1 : 0.7;
-      translateX = position * 320;
+      translateX = position * 360;
       translateZ = isCenter ? 0 : -200;
       opacity = isCenter ? 1 : 0.5;
       zIndex = 10 - Math.abs(position);
@@ -135,6 +135,9 @@ const PhotosDesordre = () => {
     if (isCenter && window.innerWidth >= 1024) {
       rotateX = mousePosition.y * -10;
       rotateY = mousePosition.x * 10;
+    } else if (window.innerWidth >= 1024) {
+      // Rotation pour regarder le centre: chaque photo est tournée selon sa position
+      rotateY = position * 10;
     }
 
     return {
@@ -146,7 +149,7 @@ const PhotosDesordre = () => {
   };
 
   return (
-    <section className="relative py-20 md:py-32 px-4 overflow-hidden bg-gradient-to-b from-gray-900 to-gray-800">
+    <section className="relative py-6 md:py-8 px-4 overflow-hidden bg-gradient-to-b from-gray-900 to-gray-800">
       <div className="max-w-7xl mx-auto">
         {/* Carrousel 3D */}
         <div 
@@ -176,21 +179,21 @@ const PhotosDesordre = () => {
                       ref={isCenter ? centerImageRef : null}
                       onMouseMove={isCenter ? handleMouseMove : undefined}
                       onMouseLeave={isCenter ? handleMouseLeave : undefined}
-                      className="relative bg-white p-3 md:p-4 shadow-2xl rounded-lg"
+                      className="relative p-0 md:p-0 shadow-2xl overflow-hidden"
                       style={{
-                        width: window.innerWidth >= 768 ? '400px' : '300px',
-                        height: window.innerWidth >= 768 ? '500px' : '400px'
+                        width: window.innerWidth >= 768 ? '360px' : '300px',
+                        height: window.innerWidth >= 768 ? '480px' : '400px'
                       }}
                     >
                       <img
                         src={slide.image}
                         alt={slide.title}
-                        className="w-full h-full object-cover rounded"
+                        className="w-full h-full object-cover"
                       />
                       
                       {/* Texte superposé (seulement sur la photo centrale) */}
                       {isCenter && (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-20 rounded">
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-20">
                           <h2 className="text-white text-3xl md:text-4xl lg:text-5xl font-bold text-center px-6 mb-3 drop-shadow-2xl">
                             {slide.title}
                           </h2>
