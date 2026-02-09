@@ -16,13 +16,40 @@ if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ limit: '50mb' }));
+// Create default category folders
+const defaultCategories = [
+  'portfolio/mariages',
+  'portfolio/portraits',
+  'portfolio/couples',
+  'portfolio/entreprise',
+  'services',
+  'header',
+  'footer'
+];
 
-// Serve static files
-app.use('/uploads', express.static(UPLOAD_DIR));
+defaultCategories.forEach(category => {
+  const categoryPath = path.join(UPLOAD_DIR, category);
+  if (!fs.existsSync(categoryPath)) {
+    fs.mkdirSync(categoryPath, { recursive: true });
+  }
+});
+
+// Middleware - CORS DOIT ÊTRE EN PREMIER ⚠️
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:5173', 'https://nenaa-pic.kurdant.fr'], // 👈 Origines autorisées
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'x-api-password', 'Authorization'],
+  credentials: true // 👈 Changé de false à true pour les headers personnalisés
+}));
+
+// 👇 Gestion explicite des requêtes OPTIONS (preflight)
+app.options('*', cors());
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true, limit: '50mb' })); // 👈 Ajouté "extended: true"
+
+// Serve static files from uploads
+app.use('/api/uploads', express.static(UPLOAD_DIR));
 
 // Authentication middleware
 const authenticate = (req, res, next) => {
@@ -48,15 +75,46 @@ const upload = multer({
   }
 });
 
-// Upload image endpoint
-app.post('/api/upload', authenticate, upload.single('image'), async (req, res) => {
+// Upload image endpoint with category support
+app.post('/api/upload', authenticate, upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const filename = `${Date.now()}-${crypto.randomBytes(8).toString('hex')}.webp`;
-    const filepath = path.join(UPLOAD_DIR, filename);
+    const { category, filename } = req.body;
+
+    if (!category) {
+      return res.status(400).json({ error: 'Category is required' });
+    }
+
+    // Validate category path to prevent directory traversal
+    const validatedCategory = category.replace(/\.\./g, '').replace(/^\//, '');
+    const categoryPath = path.join(UPLOAD_DIR, validatedCategory);
+
+    // Ensure category path is within UPLOAD_DIR
+    if (!categoryPath.startsWith(UPLOAD_DIR)) {
+      return res.status(400).json({ error: 'Invalid category' });
+    }
+
+    // Create category folder if it doesn't exist
+    if (!fs.existsSync(categoryPath)) {
+      fs.mkdirSync(categoryPath, { recursive: true });
+    }
+
+    // Generate filename with user-provided name or timestamp
+    const fileExt = '.webp';
+    const baseName = filename ? filename.replace(/\W/g, '-').toLowerCase() : `image-${Date.now()}`;
+    let finalFilename = `${baseName}${fileExt}`;
+    let filepath = path.join(categoryPath, finalFilename);
+
+    // Handle duplicate filenames
+    let counter = 1;
+    while (fs.existsSync(filepath)) {
+      finalFilename = `${baseName}-${counter}${fileExt}`;
+      filepath = path.join(categoryPath, finalFilename);
+      counter++;
+    }
 
     // Optimize and convert to WebP
     await sharp(req.file.buffer)
@@ -64,51 +122,70 @@ app.post('/api/upload', authenticate, upload.single('image'), async (req, res) =
       .webp({ quality: 80 })
       .toFile(filepath);
 
-    const publicUrl = `/uploads/${filename}`;
-    const fullPath = filepath;
+    const publicUrl = `/api/uploads/${validatedCategory}/${finalFilename}`;
 
     res.json({
       success: true,
       message: 'Image uploaded and optimized successfully',
       url: publicUrl,
-      filename,
-      fullPath,
+      filename: finalFilename,
+      category: validatedCategory,
       size: fs.statSync(filepath).size
     });
   } catch (error) {
+    console.error('Upload error:', error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// Get list of all images
-app.get('/api/images', authenticate, (req, res) => {
+// Get list of images in a category
+app.get('/api/uploads/:category(*)', (req, res) => {
   try {
-    const files = fs.readdirSync(UPLOAD_DIR);
-    const images = files.map(filename => ({
-      filename,
-      url: `/uploads/${filename}`,
-      uploadedAt: fs.statSync(path.join(UPLOAD_DIR, filename)).mtime
-    }));
+    const { category } = req.params;
 
-    res.json({
-      success: true,
-      count: images.length,
-      images
+    // Validate category path
+    const validatedCategory = category.replace(/\.\./g, '').replace(/^\//, '');
+    const categoryPath = path.join(UPLOAD_DIR, validatedCategory);
+
+    // Ensure category path is within UPLOAD_DIR
+    if (!categoryPath.startsWith(UPLOAD_DIR)) {
+      return res.status(400).json({ error: 'Invalid category' });
+    }
+
+    if (!fs.existsSync(categoryPath)) {
+      return res.json([]);
+    }
+
+    const files = fs.readdirSync(categoryPath);
+    const images = files.filter(file => {
+      const filePath = path.join(categoryPath, file);
+      return fs.statSync(filePath).isFile();
     });
+
+    res.json(images);
   } catch (error) {
+    console.error('List error:', error);
     res.status(500).json({ error: error.message });
   }
 });
 
 // Delete image endpoint
-app.delete('/api/images/:filename', authenticate, (req, res) => {
+app.delete('/api/delete', authenticate, (req, res) => {
   try {
-    const filename = req.params.filename;
-    const filepath = path.join(UPLOAD_DIR, filename);
+    const { category, filename } = req.body;
+
+    if (!category || !filename) {
+      return res.status(400).json({ error: 'Category and filename are required' });
+    }
+
+    // Validate paths
+    const validatedCategory = category.replace(/\.\./g, '').replace(/^\//, '');
+    const validatedFilename = filename.replace(/\.\./g, '').replace(/^\//, '');
+    const filepath = path.join(UPLOAD_DIR, validatedCategory, validatedFilename);
 
     // Security: ensure the file is in the uploads directory
     if (!filepath.startsWith(UPLOAD_DIR)) {
-      return res.status(400).json({ error: 'Invalid filename' });
+      return res.status(400).json({ error: 'Invalid path' });
     }
 
     if (!fs.existsSync(filepath)) {
@@ -117,6 +194,43 @@ app.delete('/api/images/:filename', authenticate, (req, res) => {
 
     fs.unlinkSync(filepath);
     res.json({ success: true, message: 'Image deleted' });
+  } catch (error) {
+    console.error('Delete error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get all images (admin list)
+app.get('/api/images', authenticate, (req, res) => {
+  try {
+    const images = [];
+
+    const walkDir = (dir, prefix = '') => {
+      const files = fs.readdirSync(dir);
+      files.forEach(file => {
+        const filePath = path.join(dir, file);
+        const stat = fs.statSync(filePath);
+        if (stat.isDirectory()) {
+          walkDir(filePath, prefix ? `${prefix}/${file}` : file);
+        } else {
+          images.push({
+            filename: file,
+            category: prefix || 'root',
+            url: `/api/uploads/${prefix ? prefix + '/' : ''}${file}`,
+            size: stat.size,
+            uploadedAt: stat.mtime
+          });
+        }
+      });
+    };
+
+    walkDir(UPLOAD_DIR);
+
+    res.json({
+      success: true,
+      count: images.length,
+      images
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -130,4 +244,6 @@ app.get('/health', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Uploads directory: ${UPLOAD_DIR}`);
+  console.log('Default categories created');
+  console.log('CORS enabled for:', ['http://localhost:3000', 'http://localhost:5173', 'https://nenaa-pic.kurdant.fr']);
 });

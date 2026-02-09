@@ -3,16 +3,18 @@ import React, { useState } from 'react';
 const Portfolio = () => {
   const [activeFilter, setActiveFilter] = useState('all');
 
+  const API_URL = process.env.REACT_APP_API_URL || 'http://185.216.26.204:5000';
+
   const portfolioItems = [
-    { id: 1, image: '/images/portfolio-1.jpg', category: 'mariages', title: 'Mariage Sarah & Thomas' },
-    { id: 2, image: '/images/portfolio-2.jpg', category: 'portraits', title: 'Portrait Studio' },
-    { id: 3, image: '/images/portfolio-3.jpg', category: 'couples', title: 'Séance Couple' },
-    { id: 4, image: '/images/portfolio-4.jpg', category: 'entreprise', title: 'Corporate Event' },
-    { id: 5, image: '/images/portfolio-5.jpg', category: 'mariages', title: 'Mariage Emma & Lucas' },
-    { id: 6, image: '/images/portfolio-6.jpg', category: 'portraits', title: 'Portrait Artistique' },
-    { id: 7, image: '/images/portfolio-7.jpg', category: 'couples', title: 'Engagement Session' },
-    { id: 8, image: '/images/portfolio-8.jpg', category: 'entreprise', title: 'Team Building' },
-    { id: 9, image: '/images/portfolio-9.jpg', category: 'mariages', title: 'Mariage Julie & Marc' },
+    { id: 1, image: `${API_URL}/api/uploads/portfolio/mariages/mariage-1.jpg`, category: 'mariages', title: 'Mariage Sarah & Thomas' },
+    { id: 2, image: `${API_URL}/api/uploads/portfolio/portraits/portrait-1.jpg`, category: 'portraits', title: 'Portrait Studio' },
+    { id: 3, image: `${API_URL}/api/uploads/portfolio/couples/couple-1.jpg`, category: 'couples', title: 'Séance Couple' },
+    { id: 4, image: `${API_URL}/api/uploads/portfolio/entreprise/entreprise-1.jpg`, category: 'entreprise', title: 'Corporate Event' },
+    { id: 5, image: `${API_URL}/api/uploads/portfolio/mariages/mariage-2.jpg`, category: 'mariages', title: 'Mariage Emma & Lucas' },
+    { id: 6, image: `${API_URL}/api/uploads/portfolio/portraits/portrait-2.jpg`, category: 'portraits', title: 'Portrait Artistique' },
+    { id: 7, image: `${API_URL}/api/uploads/portfolio/couples/couple-2.jpg`, category: 'couples', title: 'Engagement Session' },
+    { id: 8, image: `${API_URL}/api/uploads/portfolio/entreprise/entreprise-2.jpg`, category: 'entreprise', title: 'Team Building' },
+    { id: 9, image: `${API_URL}/api/uploads/portfolio/mariages/mariage-3.jpg`, category: 'mariages', title: 'Mariage Julie & Marc' },
   ];
 
   const categories = [

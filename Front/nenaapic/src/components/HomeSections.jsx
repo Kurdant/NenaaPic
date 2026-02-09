@@ -1,5 +1,7 @@
 import React from 'react';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://185.216.26.204:5000';
+
 const AboutSection = () => {
   return (
     <section 
@@ -57,22 +59,22 @@ const ServicesSection = () => {
     { 
       name: 'Mariages', 
       description: 'Immortaliser le plus beau jour de votre vie',
-      image: '/images/service-1.jpg'
+      image: `${API_URL}/api/uploads/services/mariage.jpg`
     },
     { 
       name: 'Portraits', 
       description: 'Révéler votre personnalité unique',
-      image: '/images/service-2.jpg'
+      image: `${API_URL}/api/uploads/services/portraits.jpg`
     },
     { 
       name: 'Entreprise', 
       description: 'Valoriser votre image professionnelle',
-      image: '/images/service-3.jpg'
+      image: `${API_URL}/api/uploads/services/entreprise.jpg`
     },
     { 
       name: 'Couples', 
       description: 'Capturer votre histoire d\'amour',
-      image: '/images/service-4.jpg'
+      image: `${API_URL}/api/uploads/services/couples.jpg`
     }
   ];
 
@@ -144,12 +146,12 @@ const ServicesSection = () => {
 
 const PortfolioSection = () => {
   const portfolioImages = [
-    '/images/portfolio-1.jpg',
-    '/images/portfolio-2.jpg',
-    '/images/portfolio-3.jpg',
-    '/images/portfolio-4.jpg',
-    '/images/portfolio-5.jpg',
-    '/images/portfolio-6.jpg',
+    `${API_URL}/api/uploads/portfolio/mariage/photo1.jpg`,
+    `${API_URL}/api/uploads/portfolio/mariage/photo2.jpg`,
+    `${API_URL}/api/uploads/portfolio/portraits/photo1.jpg`,
+    `${API_URL}/api/uploads/portfolio/entreprise/photo1.jpg`,
+    `${API_URL}/api/uploads/portfolio/couples/photo1.jpg`,
+    `${API_URL}/api/uploads/portfolio/evenements/photo1.jpg`,
   ];
 
   return (

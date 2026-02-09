@@ -7,6 +7,7 @@ import About from './pages/About';
 import Services from './pages/Services';
 import Portfolio from './pages/Portfolio';
 import Contact from './pages/Contact';
+import AdminUpload from './pages/AdminUpload';
 import './App.css';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/services" element={<Services />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/admin" element={<AdminUpload />} />
         </Routes>
         {/* Footer global sur toutes les pages */}
         <Footer />

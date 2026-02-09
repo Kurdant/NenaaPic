@@ -1,30 +1,32 @@
 import React from 'react';
 
 const Services = () => {
+  const API_URL = process.env.REACT_APP_API_URL || 'http://185.216.26.204:5000';
+
   const services = [
     { 
       name: 'Mariages', 
       description: 'Immortaliser le plus beau jour de votre vie',
       details: 'Reportage complet de votre journée, de la préparation à la soirée. Chaque moment capturé avec émotion et authenticité.',
-      image: '/images/service-1.jpg'
+      image: `${API_URL}/api/uploads/services/mariage.jpg`
     },
     { 
       name: 'Portraits', 
       description: 'Révéler votre personnalité unique',
       details: 'Séance photo personnalisée pour mettre en valeur votre singularité. Portraits professionnels ou artistiques.',
-      image: '/images/service-2.jpg'
+      image: `${API_URL}/api/uploads/services/portraits.jpg`
     },
     { 
       name: 'Entreprise', 
       description: 'Valoriser votre image professionnelle',
       details: 'Photos corporate, événements professionnels, portraits d\'équipe. Renforcez votre image de marque.',
-      image: '/images/service-3.jpg'
+      image: `${API_URL}/api/uploads/services/entreprise.jpg`
     },
     { 
       name: 'Couples', 
       description: 'Capturer votre histoire d\'amour',
       details: 'Séances photo de couple romantiques et naturelles. Immortalisez votre complicité et votre amour.',
-      image: '/images/service-4.jpg'
+      image: `${API_URL}/api/uploads/services/couples.jpg`
     }
   ];
 
