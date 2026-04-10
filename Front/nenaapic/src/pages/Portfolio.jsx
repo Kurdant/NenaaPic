@@ -1,178 +1,151 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import useScrollAnimation from '../hooks/useScrollAnimation';
 
-const Portfolio = () => {
-  const [activeFilter, setActiveFilter] = useState('all');
+const CirclePlusIcon = ({ className = '' }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className={className}>
+    <circle cx="12" cy="12" r="11" />
+    <line x1="12" y1="7" x2="12" y2="17" />
+    <line x1="7" y1="12" x2="17" y2="12" />
+  </svg>
+);
 
-  const API_URL = process.env.REACT_APP_API_URL || 'http://185.216.26.204:5000';
-
-  const portfolioItems = [
-    { id: 1, image: `${API_URL}/api/uploads/portfolio/mariages/mariage-1.jpg`, category: 'mariages', title: 'Mariage Sarah & Thomas' },
-    { id: 2, image: `${API_URL}/api/uploads/portfolio/portraits/portrait-1.jpg`, category: 'portraits', title: 'Portrait Studio' },
-    { id: 3, image: `${API_URL}/api/uploads/portfolio/couples/couple-1.jpg`, category: 'couples', title: 'Séance Couple' },
-    { id: 4, image: `${API_URL}/api/uploads/portfolio/entreprise/entreprise-1.jpg`, category: 'entreprise', title: 'Corporate Event' },
-    { id: 5, image: `${API_URL}/api/uploads/portfolio/mariages/mariage-2.jpg`, category: 'mariages', title: 'Mariage Emma & Lucas' },
-    { id: 6, image: `${API_URL}/api/uploads/portfolio/portraits/portrait-2.jpg`, category: 'portraits', title: 'Portrait Artistique' },
-    { id: 7, image: `${API_URL}/api/uploads/portfolio/couples/couple-2.jpg`, category: 'couples', title: 'Engagement Session' },
-    { id: 8, image: `${API_URL}/api/uploads/portfolio/entreprise/entreprise-2.jpg`, category: 'entreprise', title: 'Team Building' },
-    { id: 9, image: `${API_URL}/api/uploads/portfolio/mariages/mariage-3.jpg`, category: 'mariages', title: 'Mariage Julie & Marc' },
-  ];
-
-  const categories = [
-    { id: 'all', label: 'Tous' },
-    { id: 'mariages', label: 'Mariages' },
-    { id: 'portraits', label: 'Portraits' },
-    { id: 'couples', label: 'Couples' },
-    { id: 'entreprise', label: 'Entreprise' },
-  ];
-
-  const filteredItems = activeFilter === 'all' 
-    ? portfolioItems 
-    : portfolioItems.filter(item => item.category === activeFilter);
+const PortfolioCard = ({ item, index }) => {
+  const [ref, isVisible] = useScrollAnimation();
 
   return (
     <div
-      className="min-h-screen"
-      style={{ 
-        background: 'linear-gradient(135deg, #FDFCFA 0%, #F5F0E8 50%, #FDFCFA 100%)'
-      }}
+      ref={ref}
+      className={`group relative overflow-hidden cursor-pointer transition-all duration-700 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+      }`}
+      style={{ transitionDelay: `${(index % 4) * 100}ms` }}
     >
-      <section className="py-20 px-4 md:px-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Titre principal */}
-          <div className="text-center mb-12">
-            <h1
-              className="text-6xl md:text-7xl font-bold tracking-wide mb-6"
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                color: '#1A2B4A',
-                textShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
-              }}
-            >
-              PORTFOLIO
-            </h1>
-            <p
-              className="text-xl md:text-2xl font-light max-w-3xl mx-auto"
-              style={{ 
-                color: '#1A2B4A',
-                textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' 
-              }}
-            >
-              Découvrez une sélection de mes meilleurs travaux
-            </p>
-          </div>
+      <div className="h-[500px] overflow-hidden">
+        <img
+          src={item.image}
+          alt={item.title}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+        />
+      </div>
+      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-500 flex items-end">
+        <div className="p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+          <p className="text-white/60 text-xs uppercase tracking-[0.2em] font-body mb-1">{item.category}</p>
+          <h3 className="text-white font-heading text-xl uppercase">{item.title}</h3>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-          {/* Filtres */}
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
+const Portfolio = () => {
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [heroVisible, setHeroVisible] = useState(false);
+  const [ctaRef, ctaVisible] = useScrollAnimation();
+
+  useEffect(() => {
+    const timer = setTimeout(() => setHeroVisible(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const portfolioItems = [
+    { id: 1, image: '/images/portfolio-1.jpg', category: 'mariages', title: 'Mariage Sarah & Thomas' },
+    { id: 2, image: '/images/portfolio-2.jpg', category: 'portraits', title: 'Portrait Studio' },
+    { id: 3, image: '/images/portfolio-3.jpg', category: 'couples', title: 'Séance Couple' },
+    { id: 4, image: '/images/portfolio-4.jpg', category: 'entreprise', title: 'Corporate Event' },
+    { id: 5, image: '/images/portfolio-5.jpg', category: 'mariages', title: 'Mariage Emma & Lucas' },
+    { id: 6, image: '/images/portfolio-6.jpg', category: 'portraits', title: 'Portrait Artistique' },
+    { id: 7, image: '/images/mariage-1.jpg', category: 'couples', title: 'Engagement Session' },
+    { id: 8, image: '/images/image_deco_1.jpg', category: 'entreprise', title: 'Team Building' },
+    { id: 9, image: '/images/image_deco_2.jpg', category: 'mariages', title: 'Mariage Julie & Marc' },
+  ];
+
+  const categories = [
+    { id: 'all', label: 'TOUS' },
+    { id: 'mariages', label: 'MARIAGES' },
+    { id: 'portraits', label: 'PORTRAITS' },
+    { id: 'couples', label: 'COUPLES' },
+    { id: 'entreprise', label: 'ENTREPRISE' },
+  ];
+
+  const filteredItems = activeFilter === 'all'
+    ? portfolioItems
+    : portfolioItems.filter(item => item.category === activeFilter);
+
+  return (
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="h-screen bg-black flex items-center justify-center relative">
+        <div
+          className={`text-center transition-all duration-1000 ${
+            heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}
+        >
+          <h1
+            className="font-heading font-bold uppercase text-white tracking-wide mb-6"
+            style={{ fontSize: 'clamp(3rem, 8vw, 7rem)' }}
+          >
+            PORTFOLIO
+          </h1>
+          <p className="font-body text-white/75 text-lg tracking-wide">
+            Une sélection de mes meilleurs travaux
+          </p>
+        </div>
+      </section>
+
+      {/* Filter + Gallery Section */}
+      <section className="bg-[#111] py-20 px-4 md:px-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Filters */}
+          <div className="flex flex-wrap justify-center gap-8 mb-16">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setActiveFilter(cat.id)}
-                className={`px-6 py-3 rounded-full font-medium tracking-wide transition-all duration-300 ${
+                className={`font-body text-xs tracking-[0.2em] uppercase pb-2 transition-all duration-300 border-b-2 ${
                   activeFilter === cat.id
-                    ? 'shadow-lg'
-                    : 'hover:scale-105'
+                    ? 'text-white border-white'
+                    : 'text-white/40 border-transparent hover:text-white/70'
                 }`}
-                style={{
-                  background: activeFilter === cat.id 
-                    ? 'rgba(26, 43, 74, 0.9)' 
-                    : 'rgba(255, 255, 255, 0.8)',
-                  color: activeFilter === cat.id ? '#fff' : '#1A2B4A',
-                  border: activeFilter === cat.id 
-                    ? '2px solid rgba(26, 43, 74, 0.9)' 
-                    : '2px solid rgba(26, 43, 74, 0.2)',
-                  backdropFilter: 'blur(10px)',
-                  textShadow: activeFilter === cat.id 
-                    ? 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px'
-                    : 'none'
-                }}
               >
                 {cat.label}
               </button>
             ))}
           </div>
 
-          {/* Grille de portfolio */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-            {filteredItems.map((item) => (
-              <div
-                key={item.id}
-                className="group relative overflow-hidden rounded-2xl cursor-pointer"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.5)',
-                  backdropFilter: 'blur(12px)',
-                  border: '2px solid rgba(255, 255, 255, 0.8)',
-                  boxShadow: 'inset 0 0 20px rgba(255, 255, 255, 0.5), 0 8px 32px rgba(0, 0, 0, 0.1)',
-                  height: '400px'
-                }}
-              >
-                {/* Image */}
-                <div className="w-full h-full overflow-hidden">
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
-                  />
-                </div>
-
-                {/* Overlay au hover */}
-                <div
-                  className="absolute inset-0 flex items-end p-6 opacity-0 group-hover:opacity-100 transition-all duration-300"
-                  style={{
-                    background: 'linear-gradient(to top, rgba(26, 43, 74, 0.9) 0%, rgba(26, 43, 74, 0.5) 50%, transparent 100%)',
-                  }}
-                >
-                  <h3
-                    className="text-white text-2xl font-bold"
-                    style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
-                  >
-                    {item.title}
-                  </h3>
-                </div>
-              </div>
+          {/* Gallery Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filteredItems.map((item, index) => (
+              <PortfolioCard key={item.id} item={item} index={index} />
             ))}
           </div>
+        </div>
+      </section>
 
-          {/* Section CTA */}
-          <div
-            className="p-8 md:p-12 rounded-2xl text-center"
-            style={{
-              background: 'rgba(255, 255, 255, 0.6)',
-              backdropFilter: 'blur(12px)',
-              border: '2px solid rgba(255, 255, 255, 0.9)',
-              boxShadow: 'inset 0 0 20px rgba(255, 255, 255, 0.8), 0 8px 32px rgba(0, 0, 0, 0.1)',
-            }}
+      {/* CTA Section */}
+      <section className="bg-[#FBF7EF] py-20 px-4 md:px-8">
+        <div
+          ref={ctaRef}
+          className={`max-w-4xl mx-auto text-center transition-all duration-700 ${
+            ctaVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}
+        >
+          <h2
+            className="font-heading font-bold uppercase text-[#0F1419] mb-6"
+            style={{ fontSize: 'clamp(1.8rem, 4vw, 3.5rem)' }}
           >
-            <h3
-              className="text-3xl md:text-4xl font-bold mb-4"
-              style={{ 
-                color: '#1A2B4A',
-                textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' 
-              }}
-            >
-              Vous aimez ce que vous voyez ?
-            </h3>
-            <p
-              className="text-lg font-light mb-8 max-w-2xl mx-auto"
-              style={{ 
-                color: '#1A2B4A',
-                textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' 
-              }}
-            >
-              Faisons de votre projet le prochain à rejoindre ce portfolio
-            </p>
-            <a
-              href="/contact"
-              className="inline-block px-10 py-4 text-lg font-medium tracking-wide transition-all duration-300 hover:scale-105 rounded-lg"
-              style={{
-                background: '#1A2B4A',
-                color: '#fff',
-                border: '2px solid #1A2B4A',
-                textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px'
-              }}
-            >
-              CONTACTEZ-MOI
-            </a>
-          </div>
+            DISCUTONS DE VOTRE PROJET
+          </h2>
+          <p className="font-body text-[#2C3E50] text-lg mb-10 max-w-2xl mx-auto">
+            Faisons de votre projet le prochain à rejoindre ce portfolio
+          </p>
+          <Link
+            to="/contact"
+            className="inline-flex items-center gap-3 text-[#0F1419] font-body text-sm uppercase tracking-[0.2em] hover:opacity-70 transition-opacity duration-300"
+          >
+            CONTACTEZ-MOI
+            <CirclePlusIcon />
+          </Link>
         </div>
       </section>
     </div>

@@ -1,2 +1,121 @@
 /* App styles - Using Tailwind CSS */
 
+/* Scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Snap scroll for homepage */
+.homepage-snap {
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+  height: 100vh;
+  -webkit-overflow-scrolling: touch;
+}
+
+.snap-section {
+  scroll-snap-align: start;
+  min-height: 100vh;
+}
+
+/* Global animation utilities */
+@supports (animation: fadeIn 0.6s ease-out) {
+  .animate-fade-in {
+    animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .animate-slide-up-delayed {
+    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    opacity: 0;
+  }
+
+  .animate-slide-up-delayed:nth-child(1) {
+    animation-delay: 0s;
+  }
+
+  .animate-slide-up-delayed:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+
+  .animate-slide-up-delayed:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+
+  .animate-slide-up-delayed:nth-child(4) {
+    animation-delay: 0.3s;
+  }
+
+  .animate-slide-up-delayed:nth-child(5) {
+    animation-delay: 0.4s;
+  }
+
+  .animate-slide-up-delayed:nth-child(6) {
+    animation-delay: 0.5s;
+  }
+
+  .animate-slide-up-delayed:nth-child(n+7) {
+    animation-delay: 0.6s;
+  }
+}
+
+/* Keyframe animations defined in Tailwind config */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Smooth hover effects for interactive elements */
+button,
+a {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Focus styles for accessibility */
+button:focus,
+a:focus {
+  outline: 2px solid #F4D35E;
+  outline-offset: 2px;
+}
+
+/* Image optimization */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+

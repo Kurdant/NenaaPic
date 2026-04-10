@@ -1,64 +1,28 @@
-import React, { useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
+import LoadingScreen from '../components/LoadingScreen';
 import HeroBannerV2 from '../components/HeroBannerV2';
-import Slider3D from '../components/Slider3D';
-import { 
-  AboutSection, 
-  ServicesSection, 
-  PortfolioSection, 
-  MissionSection, 
-  TestimonialSection, 
-  ContactSection 
-} from '../components/HomeSections';
+import AboutTextSection from '../components/AboutTextSection';
+import PortfolioSlider from '../components/PortfolioSlider';
+import GetInTouchSection from '../components/GetInTouchSection';
+import Footer from '../components/Footer';
 
 const HomePage = () => {
-  useEffect(() => {
-    // Animation au scroll
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -100px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('animate-fade-in-up');
-        }
-      });
-    }, observerOptions);
-
-    // Observer toutes les sections
-    const sections = document.querySelectorAll('section');
-    sections.forEach(section => observer.observe(section));
-
-    return () => observer.disconnect();
-  }, []);
+  const [loading, setLoading] = useState(true);
+  const handleLoadingComplete = useCallback(() => setLoading(false), []);
 
   return (
-    <div className="bg-off-white overflow-x-hidden">
-      {/* 1. Hero Banner avec effet blur */}
-      <HeroBannerV2 />
-
-      {/* 2. Section à propos */}
-      <AboutSection />
-
-      {/* 3. Section Carrousel 3D */}
-      <Slider3D />
-      
-      {/* 4. Section Services + Image Déco 2 */}
-      <ServicesSection />
-
-      {/* 5. Section Portfolio/Galerie + Image Déco 3 */}
-      <PortfolioSection />
-
-      {/* 6. Section Mission Statement + Image Déco 4 */}
-      <MissionSection />
-
-      {/* 7. Section Témoignage + Image Déco 5 */}
-      <TestimonialSection />
-
-      {/* 8. Section Contact/CTA Final */}
-      <ContactSection />
-    </div>
+    <>
+      {loading && <LoadingScreen onComplete={handleLoadingComplete} />}
+      <div className={`homepage-snap ${loading ? 'overflow-hidden h-screen' : ''}`}>
+        <HeroBannerV2 />
+        <AboutTextSection />
+        <PortfolioSlider />
+        <div className="snap-section min-h-screen flex flex-col">
+          <GetInTouchSection />
+          <Footer />
+        </div>
+      </div>
+    </>
   );
 };
 

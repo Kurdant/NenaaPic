@@ -1,137 +1,137 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const location = useLocation();
 
+  // Close menu on route change
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    setIsOpen(false);
+  }, [location]);
+
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
 
   const menuItems = [
-    { label: 'À Propos', href: '/about' },
-    { label: 'Services', href: '/services' },
-    { label: 'Portfolio', href: '/portfolio' },
-    { label: 'Contact', href: '/contact' }
+    { label: 'HOME', href: '/' },
+    { label: 'PORTFOLIO', href: '/portfolio' },
+    { label: 'SERVICES', href: '/services' },
+    { label: 'À PROPOS', href: '/about' },
+    { label: 'CONTACT', href: '/contact' },
   ];
 
-  const headerBackground = isMobile
-    ? 'linear-gradient(135deg, rgb(255 228 186 / 48%) 0%, rgb(179 205 255 / 59%) 100%)'
-    : 'linear-gradient(135deg, rgb(255, 245, 230) 0%, rgb(255, 232, 240) 25%, rgb(240, 232, 255) 50%, rgb(179 205 255) 75%, rgb(232, 255, 232) 100%)';
+  const isActive = (href) => location.pathname === href;
 
   return (
     <>
-      {/* Styles pour animation */}
       <style>{`
-        @keyframes fadeIn {
+        @keyframes menuSlideIn {
+          from { transform: translateX(100%); }
+          to { transform: translateX(0); }
+        }
+        @keyframes menuSlideOut {
+          from { transform: translateX(0); }
+          to { transform: translateX(100%); }
+        }
+        @keyframes overlayFadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes menuItemFadeIn {
           from {
             opacity: 0;
+            transform: translateY(20px);
           }
           to {
             opacity: 1;
+            transform: translateY(0);
           }
         }
-
-        @keyframes slideInFromLeft {
-          from {
-            opacity: 0;
-            transform: translateX(-100%);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
+        .nav-panel {
+          animation: menuSlideIn 0.5s ease-out forwards;
         }
-
-        .mobile-menu {
-          animation: fadeIn 0.4s ease-out forwards;
+        .nav-overlay {
+          animation: overlayFadeIn 0.4s ease-out forwards;
         }
-
-        .menu-item {
+        .nav-menu-item {
           opacity: 0;
-          animation: slideInFromLeft 0.6s ease-out forwards;
+          animation: menuItemFadeIn 0.5s ease-out forwards;
         }
-
-        .menu-item:nth-child(1) { animation-delay: 0.2s; }
-        .menu-item:nth-child(3) { animation-delay: 0.3s; }
-        .menu-item:nth-child(5) { animation-delay: 0.4s; }
-        .menu-item:nth-child(7) { animation-delay: 0.5s; }
+        .nav-menu-item:nth-child(1) { animation-delay: 0.15s; }
+        .nav-menu-item:nth-child(2) { animation-delay: 0.20s; }
+        .nav-menu-item:nth-child(3) { animation-delay: 0.25s; }
+        .nav-menu-item:nth-child(4) { animation-delay: 0.30s; }
+        .nav-menu-item:nth-child(5) { animation-delay: 0.35s; }
       `}</style>
 
-      <header
-        className="fixed top-0 left-0 right-0 z-50"
-        style={{
-          height: '4rem',
-          background: headerBackground,
-          backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        }}
+      {/* Floating Logo — top-left */}
+      <Link
+        to="/"
+        className="fixed top-6 left-6 md:top-8 md:left-10 z-[51] font-heading font-bold text-white text-lg md:text-xl tracking-[0.15em] hover:text-primary-yellow transition-colors duration-300"
+        style={{ textDecoration: 'none' }}
       >
-        <div className="h-full max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between">
-          {/* Logo/Home - Left */}
-          <a
-            href="/"
-            className="text-gray-900 text-lg md:text-xl font-bold tracking-widest hover:text-yellow-600 transition-colors duration-300"
-            style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
-          >
-            HOME
-          </a>
+        NENAAPIC
+      </Link>
 
-          {/* Menu Desktop - Right */}
-          <nav className="hidden md:flex items-center gap-8">
-            {menuItems.map((item, index) => (
-              <a
-                key={index}
-                href={item.href}
-                className="text-gray-900 text-sm md:text-base font-light tracking-wide hover:text-yellow-600 transition-colors duration-300"
-                style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
+      {/* Floating Burger — top-right */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed top-6 right-6 md:top-8 md:right-10 z-[51] p-1 group"
+        aria-label="Toggle menu"
+      >
+        {isOpen ? (
+          /* X close icon */
+          <svg width="30" height="30" viewBox="0 0 30 30">
+            <line x1="6" y1="6" x2="24" y2="24" stroke="white" strokeWidth="1.5" className="group-hover:stroke-[#F4D35E] transition-colors" />
+            <line x1="24" y1="6" x2="6" y2="24" stroke="white" strokeWidth="1.5" className="group-hover:stroke-[#F4D35E] transition-colors" />
+          </svg>
+        ) : (
+          /* 2-line burger */
+          <svg width="30" height="20" viewBox="0 0 30 20">
+            <line x1="0" y1="4" x2="30" y2="4" stroke="white" strokeWidth="1.5" className="group-hover:stroke-[#F4D35E] transition-colors" />
+            <line x1="0" y1="16" x2="30" y2="16" stroke="white" strokeWidth="1.5" className="group-hover:stroke-[#F4D35E] transition-colors" />
+          </svg>
+        )}
+      </button>
 
-          {/* Menu Mobile */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-gray-900"
-            style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
-            </svg>
-          </button>
-        </div>
-      </header>
+      {/* Overlay — semi-transparent left side (desktop), full on mobile */}
+      {isOpen && (
+        <div
+          className="nav-overlay fixed inset-0 z-40"
+          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          onClick={() => setIsOpen(false)}
+        />
+      )}
 
-      {/* Mobile Menu - Fullscreen avec animation */}
+      {/* Menu Panel — slides from right */}
       {isOpen && (
         <nav
-          className="mobile-menu fixed inset-0 top-16 flex flex-col z-40 md:hidden overflow-y-auto"
-          style={{
-            background: 'linear-gradient(135deg, rgb(255 245 230 / 50%) 0%, rgb(255 232 240 / 50%) 25%, rgb(240 232 255 / 50%) 50%, rgb(179 205 255 / 50%) 75%, rgb(232 255 232 / 49%) 100%)',
-            backdropFilter: 'blur(15px)',
-          }}
+          className="nav-panel fixed top-0 right-0 bottom-0 z-50 bg-black flex flex-col items-end justify-center w-full md:w-1/2"
         >
-          {menuItems.map((item, index) => (
-            <div key={index} className="flex flex-col">
-              <a
-                href={item.href}
-                className="menu-item text-gray-900 text-lg font-medium tracking-wide hover:text-yellow-600 transition-colors duration-300 px-6 py-6"
+          <div className="pr-8 md:pr-16 flex flex-col items-end gap-6 md:gap-8">
+            {menuItems.map((item, index) => (
+              <Link
+                key={index}
+                to={item.href}
                 onClick={() => setIsOpen(false)}
-                style={{ fontWeight: 500, textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
+                className={`nav-menu-item font-heading font-bold uppercase tracking-wide transition-colors duration-300 text-2xl md:text-[3.5rem] leading-tight ${
+                  isActive(item.href)
+                    ? 'text-primary-yellow'
+                    : 'text-white hover:text-[#F4D35E]'
+                }`}
               >
                 {item.label}
-              </a>
-              {index < menuItems.length - 1 && (
-                <div className="h-px bg-white/40 mx-6"></div>
-              )}
-            </div>
-          ))}
+              </Link>
+            ))}
+          </div>
         </nav>
       )}
     </>

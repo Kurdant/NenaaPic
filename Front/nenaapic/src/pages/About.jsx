@@ -1,190 +1,187 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import useScrollAnimation from '../hooks/useScrollAnimation';
+
+const CirclePlusIcon = ({ className = '' }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className={className}>
+    <circle cx="12" cy="12" r="11" />
+    <line x1="12" y1="7" x2="12" y2="17" />
+    <line x1="7" y1="12" x2="17" y2="12" />
+  </svg>
+);
 
 const About = () => {
+  const [heroVisible, setHeroVisible] = useState(false);
+  const [bioRef, bioVisible] = useScrollAnimation();
+  const [approachRef, approachVisible] = useScrollAnimation();
+  const [step1Ref, step1Visible] = useScrollAnimation();
+  const [step2Ref, step2Visible] = useScrollAnimation();
+  const [step3Ref, step3Visible] = useScrollAnimation();
+  const [missionRef, missionVisible] = useScrollAnimation();
+
+  useEffect(() => {
+    const timer = setTimeout(() => setHeroVisible(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div
-      className="min-h-screen"
-      style={{
-        background: 'linear-gradient(135deg, #9CC5D6 0%, rgb(139, 122, 184) 100%)',
-      }}
-    >
-      <section className="py-20 px-4 md:px-8">
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="h-screen bg-black flex items-center justify-center">
+        <div
+          className={`text-center transition-all duration-1000 ${
+            heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}
+        >
+          <h1
+            className="font-heading font-bold uppercase text-white tracking-wide mb-6"
+            style={{ fontSize: 'clamp(3rem, 8vw, 7rem)' }}
+          >
+            À PROPOS
+          </h1>
+          <p className="font-body text-white/75 text-lg tracking-wide">
+            Photographe passionnée basée à Nice
+          </p>
+        </div>
+      </section>
+
+      {/* Bio Section */}
+      <section className="bg-[#FBF7EF] py-20 px-4 md:px-8">
+        <div
+          ref={bioRef}
+          className={`max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center transition-all duration-700 ${
+            bioVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}
+        >
+          <div className="overflow-hidden">
+            <img
+              src="/images/banner_2.JPG"
+              alt="NenaaPic - Photographe"
+              className="w-full h-[600px] object-cover"
+            />
+          </div>
+
+          <div className="space-y-6">
+            <h2
+              className="font-heading font-bold uppercase text-[#0F1419]"
+              style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)' }}
+            >
+              MA PASSION, VOTRE HISTOIRE
+            </h2>
+            <p className="font-body text-[#2C3E50] text-lg leading-relaxed">
+              Photographe passionnée basée à Nice, je capture l'essence de vos moments les plus précieux.
+              Chaque cliché raconte une histoire unique, empreinte d'émotion et d'authenticité.
+            </p>
+            <p className="font-body text-[#2C3E50] text-lg leading-relaxed">
+              Mon approche artistique combine technique professionnelle et sensibilité créative
+              pour créer des images intemporelles qui vous ressemblent.
+            </p>
+            <Link
+              to="/portfolio"
+              className="inline-flex items-center gap-3 text-[#0F1419] font-body text-sm uppercase tracking-[0.2em] hover:opacity-70 transition-opacity duration-300 pt-4"
+            >
+              VOIR MON TRAVAIL
+              <CirclePlusIcon />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Approach Section */}
+      <section className="bg-black py-20 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
-          {/* Titre principal */}
-          <div className="text-center mb-16">
-            <h1
-              className="text-6xl md:text-7xl font-bold text-white tracking-wide mb-6"
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                textShadow: '0 2px 10px rgba(0, 0, 0, 0.5), 0 4px 20px rgba(0, 0, 0, 0.3)'
-              }}
+          <div
+            ref={approachRef}
+            className={`text-center mb-16 transition-all duration-700 ${
+              approachVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+            }`}
+          >
+            <h2
+              className="font-heading font-bold uppercase text-white"
+              style={{ fontSize: 'clamp(1.8rem, 4vw, 3.5rem)' }}
             >
-              HERE'S TO LIFE
-            </h1>
-            <p
-              className="text-xl md:text-2xl text-white/90 font-light"
-              style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
+              MON APPROCHE
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
+            <div
+              ref={step1Ref}
+              className={`transition-all duration-700 ${
+                step1Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+              }`}
             >
-              Photographe passionnée basée à Nice
+              <p className="font-heading text-5xl text-white/30 mb-4">01</p>
+              <h3 className="font-heading font-bold uppercase text-white text-xl mb-3">DÉCOUVRIR</h3>
+              <p className="font-body text-white/70 leading-relaxed">
+                Je prends le temps de comprendre votre vision, vos attentes et l'histoire que vous souhaitez raconter.
+              </p>
+            </div>
+
+            <div
+              ref={step2Ref}
+              className={`transition-all duration-700 ${
+                step2Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+              }`}
+              style={{ transitionDelay: '100ms' }}
+            >
+              <p className="font-heading text-5xl text-white/30 mb-4">02</p>
+              <h3 className="font-heading font-bold uppercase text-white text-xl mb-3">CRÉER</h3>
+              <p className="font-body text-white/70 leading-relaxed">
+                Avec un oeil artistique et une technique professionnelle, je capture l'essence de chaque moment.
+              </p>
+            </div>
+
+            <div
+              ref={step3Ref}
+              className={`transition-all duration-700 ${
+                step3Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+              }`}
+              style={{ transitionDelay: '200ms' }}
+            >
+              <p className="font-heading text-5xl text-white/30 mb-4">03</p>
+              <h3 className="font-heading font-bold uppercase text-white text-xl mb-3">LIVRER</h3>
+              <p className="font-body text-white/70 leading-relaxed">
+                Un travail de retouche minutieux pour des images intemporelles qui vous ressemblent.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Mission Section */}
+      <section className="bg-[#FBF7EF] py-20 px-4 md:px-8">
+        <div
+          ref={missionRef}
+          className={`max-w-5xl mx-auto transition-all duration-700 ${
+            missionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}
+        >
+          <h2
+            className="font-heading font-bold uppercase text-[#0F1419] text-center mb-12"
+            style={{ fontSize: 'clamp(1.8rem, 4vw, 3.5rem)' }}
+          >
+            MA MISSION
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
+            <p className="font-body text-[#2C3E50] text-lg leading-relaxed">
+              Ma mission est de créer des images qui transcendent le temps.
+              Je crois en la puissance de la photographie pour capturer l'émotion brute
+              et raconter des histoires authentiques.
+            </p>
+            <p className="font-body text-[#2C3E50] text-lg leading-relaxed">
+              Chaque client est unique, et mon approche personnalisée garantit
+              que votre vision prenne vie à travers mon objectif. Ensemble, créons quelque chose d'extraordinaire.
             </p>
           </div>
-
-          {/* Contenu principal - Grid 2 colonnes */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-20">
-            {/* Image principale */}
-            <div className="relative">
-              <div
-                className="overflow-hidden rounded-2xl shadow-2xl"
-                style={{
-                  border: '2px solid rgba(255, 255, 255, 0.3)',
-                }}
-              >
-                <img
-                  src="/images/banner_2.jpg"
-                  alt="NenaaPic - À Propos"
-                  className="w-full h-[600px] object-cover"
-                />
-              </div>
-
-              {/* Cercle décoratif */}
-              <div className="absolute -top-4 -right-4 w-20 h-20 border-4 border-yellow-300 rounded-full opacity-60"></div>
-            </div>
-
-            {/* Texte descriptif */}
-            <div className="text-white space-y-6">
-              <h2
-                className="text-4xl font-bold mb-6"
-                style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
-              >
-                Ma passion, votre histoire
-              </h2>
-
-              <p
-                className="text-lg font-light leading-relaxed"
-                style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
-              >
-                Photographe passionnée basée à Nice, je capture l'essence de vos moments les plus précieux. 
-                Chaque cliché raconte une histoire unique, empreinte d'émotion et d'authenticité.
-              </p>
-
-              <p
-                className="text-lg font-light leading-relaxed"
-                style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
-              >
-                Mon approche artistique combine technique professionnelle et sensibilité créative 
-                pour créer des images intemporelles qui vous ressemblent.
-              </p>
-
-              {/* Ligne décorative */}
-              <div className="relative pt-8">
-                <svg className="w-32 h-32 opacity-70" viewBox="0 0 100 100">
-                  <line x1="0" y1="50" x2="80" y2="50" stroke="#D4AF37" strokeWidth="2"/>
-                  <circle cx="85" cy="50" r="5" fill="#D4AF37"/>
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          {/* Section Mission avec liquid glass */}
-          <div className="mt-20">
-            <div
-              className="p-8 md:p-12 rounded-2xl"
-              style={{
-                background: 'rgba(255, 255, 255, 0.15)',
-                backdropFilter: 'blur(12px)',
-                border: '2px solid rgba(255, 255, 255, 0.3)',
-                boxShadow: 'inset 0 0 20px rgba(255, 255, 255, 0.1), 0 8px 32px rgba(0, 0, 0, 0.2)',
-              }}
+          <div className="text-center">
+            <Link
+              to="/contact"
+              className="inline-flex items-center gap-3 text-[#0F1419] font-body text-sm uppercase tracking-[0.2em] hover:opacity-70 transition-opacity duration-300"
             >
-              <h3
-                className="text-3xl font-bold text-white mb-6 text-center"
-                style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
-              >
-                MA MISSION
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <p
-                  className="text-lg font-light leading-relaxed text-white"
-                  style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
-                >
-                  Ma mission est de créer des images qui transcendent le temps. 
-                  Je crois en la puissance de la photographie pour capturer l'émotion brute 
-                  et raconter des histoires authentiques.
-                </p>
-
-                <p
-                  className="text-lg font-light leading-relaxed text-white"
-                  style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
-                >
-                  Chaque client est unique, et mon approche personnalisée garantit 
-                  que votre vision prenne vie à travers mon objectif. Ensemble, créons quelque chose d'extraordinaire.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Valeurs - 3 colonnes */}
-          <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center text-white">
-              <div className="mb-4">
-                <svg className="w-16 h-16 mx-auto opacity-80" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
-                </svg>
-              </div>
-              <h4
-                className="text-xl font-bold mb-3"
-                style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
-              >
-                Authenticité
-              </h4>
-              <p
-                className="font-light"
-                style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
-              >
-                Capturer des moments vrais et sincères
-              </p>
-            </div>
-
-            <div className="text-center text-white">
-              <div className="mb-4">
-                <svg className="w-16 h-16 mx-auto opacity-80" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                </svg>
-              </div>
-              <h4
-                className="text-xl font-bold mb-3"
-                style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
-              >
-                Passion
-              </h4>
-              <p
-                className="font-light"
-                style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
-              >
-                Dévouement total à mon art
-              </p>
-            </div>
-
-            <div className="text-center text-white">
-              <div className="mb-4">
-                <svg className="w-16 h-16 mx-auto opacity-80" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                </svg>
-              </div>
-              <h4
-                className="text-xl font-bold mb-3"
-                style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
-              >
-                Excellence
-              </h4>
-              <p
-                className="font-light"
-                style={{ textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px, rgba(0, 0, 0, 0.3) 0px 2px 15px' }}
-              >
-                Un résultat professionnel garanti
-              </p>
-            </div>
+              CONTACTEZ-MOI
+              <CirclePlusIcon />
+            </Link>
           </div>
         </div>
       </section>
