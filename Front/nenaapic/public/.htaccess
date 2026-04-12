@@ -1,6 +1,10 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+
+  # Proxy API calls to VPS (avoid Mixed Content HTTPS→HTTP)
+  RewriteRule ^api/(.*)$ /api-proxy.php?path=/api/$1 [QSA,L]
+
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d

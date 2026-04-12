@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useScrollAnimation from '../hooks/useScrollAnimation';
-
-const API_URL = process.env.REACT_APP_API_URL || 'http://185.216.26.204';
+import { apiUrl } from '../utils/api';
 
 const CirclePlusIcon = ({ className = '' }) => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className={className}>
@@ -56,7 +55,7 @@ const Portfolio = () => {
   useEffect(() => {
     const fetchGallery = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/gallery`);
+        const res = await fetch(apiUrl('/api/gallery'));
         const data = await res.json();
         if (data.success) {
           setPortfolioItems(data.images);

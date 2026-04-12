@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { apiUrl } from '../utils/api';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://185.216.26.204';
 const API_PASSWORD = 'nenaapic1234';
 
 const extractDriveId = (url) => {
@@ -37,7 +37,7 @@ const AdminUpload = () => {
   const fetchGallery = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}/api/gallery`);
+      const res = await fetch(apiUrl('/api/gallery'));
       const data = await res.json();
       if (data.success) setGallery(data.images);
     } catch (err) {
@@ -84,8 +84,7 @@ const AdminUpload = () => {
     if (pendingImages.length === 0) return showMsg('Rien à publier', 'error');
     setPublishing(true);
     try {
-      const res = await fetch(`${API_URL}/api/gallery`, {
-        method: 'POST',
+      const res = await fetch(apiUrl('/api/gallery'), {
         headers: {
           'Content-Type': 'application/json',
           'x-api-password': API_PASSWORD,
@@ -117,7 +116,7 @@ const AdminUpload = () => {
   const handleDelete = async (id, title) => {
     if (!window.confirm(`Supprimer "${title || 'cette image'}" ?`)) return;
     try {
-      const res = await fetch(`${API_URL}/api/gallery/${id}`, {
+      const res = await fetch(apiUrl(`/api/gallery/${id}`), {
         method: 'DELETE',
         headers: { 'x-api-password': API_PASSWORD },
       });
