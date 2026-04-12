@@ -1,301 +1,358 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+
+const API_URL = process.env.REACT_APP_API_URL || 'http://185.216.26.204';
+const API_PASSWORD = 'nenaapic1234';
+
+const extractDriveId = (url) => {
+  const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  return match ? match[1] : null;
+};
+
+const getDriveThumb = (fileId) =>
+  `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
+
+const categories = [
+  { id: 'mariages', label: 'Mariages', icon: '💍' },
+  { id: 'portraits', label: 'Portraits', icon: '📸' },
+  { id: 'couples', label: 'Couples', icon: '💕' },
+  { id: 'entreprise', label: 'Entreprise', icon: '🏢' },
+  { id: 'artistique', label: 'Artistique', icon: '🎨' },
+  { id: 'grossesse', label: 'Grossesse', icon: '🤰' },
+  { id: 'famille', label: 'Famille', icon: '👨‍👩‍👧' },
+  { id: 'evenement', label: 'Événement', icon: '🎉' },
+];
 
 const AdminUpload = () => {
-  const [selectedCategory, setSelectedCategory] = useState('portfolio/mariages');
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [fileName, setFileName] = useState('');
-  const [uploadedImages, setUploadedImages] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [gallery, setGallery] = useState([]);
+  const [urlInput, setUrlInput] = useState('');
+  const [titleInput, setTitleInput] = useState('');
+  const [categoryInput, setCategoryInput] = useState('mariages');
+  const [pendingImages, setPendingImages] = useState([]);
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState(''); // 'success' ou 'error'
+  const [messageType, setMessageType] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [filterCategory, setFilterCategory] = useState('all');
 
-  const API_URL = process.env.REACT_APP_API_URL || 'http://api.nenaa-pic.kurdant.fr';
-
-  // Catégories disponibles
-  const categories = [
-    { id: 'portfolio/mariages', label: 'Portfolio - Mariages' },
-    { id: 'portfolio/portraits', label: 'Portfolio - Portraits' },
-    { id: 'portfolio/couples', label: 'Portfolio - Couples' },
-    { id: 'portfolio/entreprise', label: 'Portfolio - Entreprise' },
-    { id: 'services', label: 'Services' },
-    { id: 'header', label: 'Header' },
-    { id: 'footer', label: 'Footer' },
-  ];
-
-  // Charger les images existantes
-  useEffect(() => {
-    fetchUploadedImages();
-  }, [selectedCategory]);
-
-  const fetchUploadedImages = async () => {
+  const fetchGallery = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL}/api/uploads/${selectedCategory}`, {
-        headers: {
-          'x-api-password': 'nenaapic1234',
-        }
-      });
-      if (response.ok) {
-        const images = await response.json();
-        setUploadedImages(images);
-      }
-    } catch (error) {
-      console.error('Erreur lors du chargement des images:', error);
-    }
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      setFileName(file.name.split('.')[0]);
-    }
-  };
-
-  const handleUpload = async () => {
-    if (!selectedFile) {
-      setMessage('Sélectionne une image d\'abord!');
-      setMessageType('error');
-      return;
-    }
-
-    if (!fileName.trim()) {
-      setMessage('Entre un nom de fichier!');
-      setMessageType('error');
-      return;
-    }
-
-    setLoading(true);
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    formData.append('category', selectedCategory);
-    formData.append('filename', fileName);
-
-    try {
-      const response = await fetch(`${API_URL}/api/upload`, {
-        method: 'POST',
-        headers: {
-          'x-api-password': 'nenaapic1234',
-        },
-        body: formData,
-      });
-
-      if (response.ok) {
-        setMessage('✅ Image uploadée avec succès!');
-        setMessageType('success');
-        setSelectedFile(null);
-        setFileName('');
-        document.querySelector('input[type="file"]').value = '';
-        setTimeout(fetchUploadedImages, 500);
-      } else {
-        const error = await response.json();
-        setMessage(`❌ Erreur: ${error.message}`);
-        setMessageType('error');
-      }
-    } catch (error) {
-      setMessage(`❌ Erreur: ${error.message}`);
-      setMessageType('error');
+      setLoading(true);
+      const res = await fetch(`${API_URL}/api/gallery`);
+      const data = await res.json();
+      if (data.success) setGallery(data.images);
+    } catch (err) {
+      console.error('Fetch gallery error:', err);
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  useEffect(() => { fetchGallery(); }, [fetchGallery]);
+
+  const showMsg = (text, type = 'success') => {
+    setMessage(text);
+    setMessageType(type);
+    setTimeout(() => setMessage(''), 4000);
   };
 
-  const handleDelete = async (imageName) => {
-    if (!window.confirm(`Supprimer ${imageName}?`)) return;
+  const handleAddToPending = () => {
+    if (!urlInput.trim()) return showMsg('Colle un lien Google Drive', 'error');
+    const fileId = extractDriveId(urlInput);
+    if (!fileId) return showMsg('Lien invalide — utilise un lien Google Drive /d/...', 'error');
+    if (pendingImages.some(p => extractDriveId(p.url) === fileId) ||
+        gallery.some(g => g.fileId === fileId)) {
+      return showMsg('Image déjà ajoutée', 'error');
+    }
 
+    setPendingImages(prev => [...prev, {
+      url: urlInput.trim(),
+      title: titleInput.trim(),
+      category: categoryInput,
+      fileId,
+      thumbnail: getDriveThumb(fileId),
+    }]);
+    setUrlInput('');
+    setTitleInput('');
+    showMsg(`✅ Image ajoutée à la file (${pendingImages.length + 1} en attente)`);
+  };
+
+  const handleRemovePending = (fileId) => {
+    setPendingImages(prev => prev.filter(p => p.fileId !== fileId));
+  };
+
+  const handlePublish = async () => {
+    if (pendingImages.length === 0) return showMsg('Rien à publier', 'error');
+    setPublishing(true);
     try {
-      const response = await fetch(`${API_URL}/api/delete`, {
-        method: 'DELETE',
-        headers: { 
+      const res = await fetch(`${API_URL}/api/gallery`, {
+        method: 'POST',
+        headers: {
           'Content-Type': 'application/json',
-          'x-api-password': 'nenaapic1234',
+          'x-api-password': API_PASSWORD,
         },
         body: JSON.stringify({
-          category: selectedCategory,
-          filename: imageName,
+          images: pendingImages.map(p => ({
+            url: p.url,
+            title: p.title,
+            category: p.category,
+          })),
         }),
       });
-
-      if (response.ok) {
-        setMessage(`✅ ${imageName} supprimée!`);
-        setMessageType('success');
-        setTimeout(fetchUploadedImages, 500);
+      const data = await res.json();
+      if (data.success) {
+        const addedCount = data.added.filter(a => a.status === 'added').length;
+        showMsg(`✅ ${addedCount} image(s) publiée(s) !`);
+        setPendingImages([]);
+        fetchGallery();
       } else {
-        setMessage('❌ Erreur lors de la suppression');
-        setMessageType('error');
+        showMsg(`❌ ${data.error}`, 'error');
       }
-    } catch (error) {
-      setMessage(`❌ Erreur: ${error.message}`);
-      setMessageType('error');
+    } catch (err) {
+      showMsg(`❌ ${err.message}`, 'error');
+    } finally {
+      setPublishing(false);
+    }
+  };
+
+  const handleDelete = async (id, title) => {
+    if (!window.confirm(`Supprimer "${title || 'cette image'}" ?`)) return;
+    try {
+      const res = await fetch(`${API_URL}/api/gallery/${id}`, {
+        method: 'DELETE',
+        headers: { 'x-api-password': API_PASSWORD },
+      });
+      if (res.ok) {
+        showMsg('✅ Image supprimée');
+        fetchGallery();
+      }
+    } catch (err) {
+      showMsg(`❌ ${err.message}`, 'error');
     }
   };
 
   return (
-    <div
-      className="min-h-screen"
-      style={{
-        background: 'linear-gradient(135deg, rgb(42, 45, 58) 0%, rgb(61, 65, 88) 50%, rgb(47, 50, 65) 100%)', paddingTop: '10%',
-      }}
-    >
-      <div className="max-w-6xl mx-auto p-8">
-        <h1
-          className="text-4xl font-bold text-white mb-2"
-          style={{ textShadow: 'rgba(0, 0, 0, 0.3) 0px 2px 10px' }}
-        >
-          Admin - Gestion des Images
+    <div className="min-h-screen bg-[#0F1419]" style={{ paddingTop: '100px' }}>
+      <div className="max-w-6xl mx-auto px-6 pb-20">
+        {/* Header */}
+        <h1 className="font-heading text-4xl md:text-5xl text-white uppercase mb-2">
+          Galerie
         </h1>
-        <p
-          className="text-white/70 mb-8"
-          style={{ textShadow: 'rgba(0, 0, 0, 0.2) 0px 1px 4px' }}
-        >
-          Upload, organise et gère toutes les images du site
+        <p className="font-body text-white/50 mb-10 text-sm tracking-wider">
+          Ajoute des images depuis Google Drive
         </p>
 
+        {/* Message */}
+        {message && (
+          <div className={`mb-6 p-4 text-sm font-body border ${
+            messageType === 'success'
+              ? 'bg-green-500/10 text-green-300 border-green-500/30'
+              : 'bg-red-500/10 text-red-300 border-red-500/30'
+          }`}>
+            {message}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Formulaire d'upload */}
-          <div
-            className="lg:col-span-1 p-6 rounded-2xl"
-            style={{
-              background: 'rgba(255, 255, 255, 0.08)',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-            }}
-          >
-            <h2 className="text-2xl font-bold text-white mb-4">Upload Image</h2>
+          {/* Left: Add form */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="border border-white/10 p-6 space-y-5">
+              <h2 className="font-heading text-white text-lg uppercase tracking-wider">
+                Ajouter une image
+              </h2>
 
-            {/* Sélecteur de catégorie */}
-            <div className="mb-6">
-              <label className="text-white/80 font-light text-sm mb-2 block">
-                Catégorie:
-              </label>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full p-3 rounded-lg bg-white/10 text-white border border-white/20 focus:outline-none focus:border-white/40"
+              {/* URL input */}
+              <div>
+                <label className="text-white/50 text-xs uppercase tracking-wider block mb-2 font-body">
+                  Lien Google Drive
+                </label>
+                <input
+                  type="text"
+                  value={urlInput}
+                  onChange={(e) => setUrlInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddToPending()}
+                  placeholder="https://drive.google.com/file/d/..."
+                  className="w-full p-3 bg-white/5 text-white border border-white/15 font-body text-sm placeholder-white/20 focus:outline-none focus:border-white/40 transition-colors"
+                />
+              </div>
+
+              {/* Preview */}
+              {urlInput && extractDriveId(urlInput) && (
+                <div className="border border-white/10 p-2">
+                  <img
+                    src={getDriveThumb(extractDriveId(urlInput))}
+                    alt="Preview"
+                    className="w-full h-32 object-cover opacity-80"
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
+                </div>
+              )}
+
+              {/* Title */}
+              <div>
+                <label className="text-white/50 text-xs uppercase tracking-wider block mb-2 font-body">
+                  Titre (optionnel)
+                </label>
+                <input
+                  type="text"
+                  value={titleInput}
+                  onChange={(e) => setTitleInput(e.target.value)}
+                  placeholder="ex: Mariage Julie & Marc"
+                  className="w-full p-3 bg-white/5 text-white border border-white/15 font-body text-sm placeholder-white/20 focus:outline-none focus:border-white/40 transition-colors"
+                />
+              </div>
+
+              {/* Category — clickable buttons */}
+              <div>
+                <label className="text-white/50 text-xs uppercase tracking-wider block mb-3 font-body">
+                  Catégorie
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setCategoryInput(cat.id)}
+                      className={`py-2.5 px-3 text-xs font-body uppercase tracking-wider transition-all duration-200 border text-left ${
+                        categoryInput === cat.id
+                          ? 'bg-white text-[#0F1419] border-white font-semibold'
+                          : 'bg-white/5 text-white/60 border-white/10 hover:border-white/30 hover:text-white/90'
+                      }`}
+                    >
+                      <span className="mr-1.5">{cat.icon}</span> {cat.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Add button */}
+              <button
+                onClick={handleAddToPending}
+                className="w-full py-3 border border-white/30 text-white font-body text-sm uppercase tracking-wider hover:bg-white/10 transition-colors"
               >
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id} className="bg-gray-800">
-                    {cat.label}
-                  </option>
+                + AJOUTER À LA FILE
+              </button>
+            </div>
+
+            {/* Pending queue */}
+            {pendingImages.length > 0 && (
+              <div className="border border-primary-yellow/30 bg-primary-yellow/5 p-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-heading text-white text-sm uppercase tracking-wider">
+                    En attente ({pendingImages.length})
+                  </h3>
+                </div>
+
+                {pendingImages.map((img) => (
+                  <div key={img.fileId} className="flex items-center gap-3 border-b border-white/5 pb-3">
+                    <img src={img.thumbnail} alt="" className="w-12 h-12 object-cover" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-xs truncate font-body">{img.title || 'Sans titre'}</p>
+                      <p className="text-white/40 text-xs font-body">{img.category}</p>
+                    </div>
+                    <button
+                      onClick={() => handleRemovePending(img.fileId)}
+                      className="text-red-400 hover:text-red-300 text-xs"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 ))}
-              </select>
-            </div>
 
-            {/* Input fichier */}
-            <div className="mb-6">
-              <label className="text-white/80 font-light text-sm mb-2 block">
-                Sélectionne une image:
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="w-full p-3 rounded-lg bg-white/10 text-white border border-white/20 file:bg-white/20 file:border-0 file:rounded file:px-3 file:py-1 file:text-white cursor-pointer"
-              />
-            </div>
-
-            {/* Nom du fichier */}
-            <div className="mb-6">
-              <label className="text-white/80 font-light text-sm mb-2 block">
-                Nom du fichier:
-              </label>
-              <input
-                type="text"
-                value={fileName}
-                onChange={(e) => setFileName(e.target.value)}
-                placeholder="ex: mariage-sarah-thomas"
-                className="w-full p-3 rounded-lg bg-white/10 text-white border border-white/20 placeholder-white/30 focus:outline-none focus:border-white/40"
-              />
-            </div>
-
-            {/* Message */}
-            {message && (
-              <div
-                className={`mb-6 p-4 rounded-lg text-sm font-light ${
-                  messageType === 'success'
-                    ? 'bg-green-500/20 text-green-100 border border-green-500/30'
-                    : 'bg-red-500/20 text-red-100 border border-red-500/30'
-                }`}
-              >
-                {message}
+                <button
+                  onClick={handlePublish}
+                  disabled={publishing}
+                  className="w-full py-3 bg-white text-[#0F1419] font-body text-sm uppercase tracking-wider font-semibold hover:bg-white/90 transition-colors disabled:opacity-50"
+                >
+                  {publishing ? 'PUBLICATION...' : `PUBLIER (${pendingImages.length})`}
+                </button>
               </div>
             )}
-
-            {/* Bouton upload */}
-            <button
-              onClick={handleUpload}
-              disabled={loading}
-              className="w-full py-3 rounded-lg font-medium transition-all duration-300 hover:scale-105 disabled:opacity-50"
-              style={{
-                background: loading ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.2)',
-                color: '#fff',
-                border: '2px solid rgba(255, 255, 255, 0.3)',
-                textShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 4px',
-              }}
-            >
-              {loading ? 'Upload en cours...' : 'UPLOAD'}
-            </button>
           </div>
 
-          {/* Galerie des images existantes */}
+          {/* Right: Current gallery */}
           <div className="lg:col-span-2">
-            <h2 className="text-2xl font-bold text-white mb-4">
-              Images - {categories.find((c) => c.id === selectedCategory)?.label}
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-heading text-white text-lg uppercase tracking-wider">
+                Galerie ({gallery.length})
+              </h2>
+            </div>
 
-            {uploadedImages.length === 0 ? (
-              <p
-                className="text-white/60 text-center py-8"
-                style={{ textShadow: 'rgba(0, 0, 0, 0.2) 0px 1px 4px' }}
+            {/* Category filter bar */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              <button
+                onClick={() => setFilterCategory('all')}
+                className={`px-4 py-1.5 text-xs font-body uppercase tracking-wider transition-all duration-200 border ${
+                  filterCategory === 'all'
+                    ? 'bg-white text-[#0F1419] border-white'
+                    : 'text-white/50 border-white/10 hover:border-white/30 hover:text-white'
+                }`}
               >
-                Aucune image dans cette catégorie
-              </p>
-            ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {uploadedImages.map((image) => (
-                  <div
-                    key={image}
-                    className="relative group overflow-hidden rounded-xl"
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.08)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      aspectRatio: '1',
-                    }}
+                Tous ({gallery.length})
+              </button>
+              {categories.map((cat) => {
+                const count = gallery.filter(g => g.category === cat.id).length;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setFilterCategory(cat.id)}
+                    className={`px-4 py-1.5 text-xs font-body uppercase tracking-wider transition-all duration-200 border ${
+                      filterCategory === cat.id
+                        ? 'bg-white text-[#0F1419] border-white'
+                        : 'text-white/50 border-white/10 hover:border-white/30 hover:text-white'
+                    }`}
                   >
-                    <img
-                      src={`${API_URL}/api/uploads/${selectedCategory}/${image}`}
-                      alt={image}
-                      className="w-full h-full object-cover"
-                    />
+                    {cat.icon} {cat.label} ({count})
+                  </button>
+                );
+              })}
+            </div>
 
-                    {/* Overlay au hover */}
-                    <div
-                      className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
-                      style={{
-                        background: 'rgba(0, 0, 0, 0.7)',
-                      }}
-                    >
+            {(() => {
+              const filtered = filterCategory === 'all'
+                ? gallery
+                : gallery.filter(g => g.category === filterCategory);
+
+              return loading ? (
+                <p className="text-white/40 font-body text-sm">Chargement...</p>
+              ) : filtered.length === 0 ? (
+                <div className="border border-white/10 p-12 text-center">
+                  <p className="text-white/30 font-body">
+                    {gallery.length === 0
+                      ? 'Aucune image dans la galerie'
+                      : `Aucune image dans "${filterCategory}"`}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {filtered.map((img) => (
+                  <div key={img.id} className="group relative overflow-hidden border border-white/5">
+                    <div className="aspect-square">
+                      <img
+                        src={img.directUrl}
+                        alt={img.title || ''}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/60 transition-all duration-300 flex items-center justify-center">
                       <button
-                        onClick={() => handleDelete(image)}
-                        className="px-4 py-2 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors"
+                        onClick={() => handleDelete(img.id, img.title)}
+                        className="opacity-0 group-hover:opacity-100 px-4 py-2 border border-red-400 text-red-400 text-xs uppercase tracking-wider hover:bg-red-400 hover:text-white transition-all duration-300 font-body"
                       >
                         Supprimer
                       </button>
                     </div>
-
-                    {/* Nom du fichier */}
-                    <div
-                      className="absolute bottom-0 left-0 right-0 p-2 text-white text-xs font-light"
-                      style={{
-                        background: 'rgba(0, 0, 0, 0.5)',
-                        textShadow: 'rgba(0, 0, 0, 0.3) 0px 1px 2px',
-                      }}
-                    >
-                      {image}
+                    {/* Info */}
+                    <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/70 to-transparent">
+                      <p className="text-white text-xs font-body truncate">{img.title || 'Sans titre'}</p>
+                      <p className="text-white/40 text-[10px] font-body uppercase">{img.category}</p>
                     </div>
                   </div>
                 ))}
               </div>
-            )}
+              );
+            })()}
           </div>
         </div>
       </div>

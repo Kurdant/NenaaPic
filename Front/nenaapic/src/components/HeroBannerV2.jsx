@@ -1,71 +1,130 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const HeroBannerV2 = () => {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoaded(true), 150);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <section className="snap-section relative h-screen w-full overflow-hidden">
-      {/* Background Image - Full width */}
-      <div className="absolute inset-0">
-        <img
-          src="/images/banner.jpg"
-          alt="NenaaPic Photography"
-          className="w-full h-full object-cover"
-        />
-      </div>
+      <style>{`
+        @keyframes scrollDrop {
+          0%   { transform: translateY(-100%); opacity: 0; }
+          30%  { opacity: 1; }
+          100% { transform: translateY(250%); opacity: 0; }
+        }
+        .scroll-drop {
+          animation: scrollDrop 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+      `}</style>
 
-      {/* Left Side - Blurred Overlay (Desktop only) */}
-      <div className="absolute inset-0 w-1/2 hidden md:block">
-        <img
-          src="/images/banner.jpg"
-          alt=""
-          aria-hidden="true"
-          className="w-full h-full object-cover filter blur-xl"
-        />
-      </div>
+      {/* Full-bleed background — objectPosition keeps building visible */}
+      <img
+        src="/images/banner.jpg"
+        alt="NenaaPic Photography — Nice"
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ objectPosition: '65% center' }}
+      />
 
-      {/* Text Overlay - Centered */}
-      <div className="absolute inset-0 flex items-center justify-center z-10 mx-4 md:mx-0">
-        <div 
-          className="text-center px-6 md:px-16 py-12 border border-white/30 max-w-sm md:max-w-none animate-scale-in"
-          style={{
-            backgroundColor: 'rgb(209 209 209 / 29%)',
-            backdropFilter: 'blur(10px)',
-            boxShadow: 'inset 0 0 20px rgb(255 255 255 / 0.2), 0 8px 32px rgb(0 0 0 / 0.1)',
-            borderRadius: '16px'
-          }}
-        >
-          <h1 
-            className="font-heading font-bold text-white mb-4 tracking-wider animate-fade-in" 
-            style={{ 
-              fontSize: '3.5rem',
-              textShadow: '0 2px 10px rgba(0, 0, 0, 0.5), 0 4px 20px rgba(0, 0, 0, 0.3)'
+      {/* Gradient: bottom dark for text + very subtle top */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            'linear-gradient(to top, rgba(10,12,16,0.72) 0%, rgba(10,12,16,0.15) 45%, transparent 100%)',
+        }}
+      />
+
+      {/* Yellow accent strip — grows left to right on load */}
+      <div
+        className="absolute bottom-0 left-0 h-[3px]"
+        style={{
+          backgroundColor: '#F4D35E',
+          width: loaded ? '100%' : '0%',
+          transition: 'width 1.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          transitionDelay: '0.9s',
+        }}
+      />
+
+      {/* Bottom editorial layout */}
+      <div className="absolute inset-x-0 bottom-0 px-8 md:px-16 pb-12 md:pb-20 z-10">
+        <div className="flex items-end justify-between gap-8">
+
+          {/* LEFT — main text block */}
+          <div className="flex flex-col gap-2 md:gap-3">
+            <span
+              className="text-white/50 text-[10px] md:text-xs uppercase tracking-[0.4em] font-body"
+              style={{
+                opacity: loaded ? 1 : 0,
+                transform: loaded ? 'translateY(0)' : 'translateY(10px)',
+                transition: 'opacity 0.6s ease, transform 0.6s ease',
+                transitionDelay: '0.1s',
+              }}
+            >
+              Photographe — Nice, France
+            </span>
+
+            <h1
+              className="font-heading font-bold text-white uppercase leading-[0.88]"
+              style={{
+                fontSize: 'clamp(3.8rem, 9.5vw, 8.5rem)',
+                opacity: loaded ? 1 : 0,
+                transform: loaded ? 'translateY(0)' : 'translateY(22px)',
+                transition: 'opacity 0.8s ease, transform 0.8s ease',
+                transitionDelay: '0.25s',
+              }}
+            >
+              NENAAPIC
+            </h1>
+
+            <p
+              className="text-white/65 text-sm md:text-base font-body font-light tracking-wide"
+              style={{
+                opacity: loaded ? 1 : 0,
+                transform: loaded ? 'translateY(0)' : 'translateY(10px)',
+                transition: 'opacity 0.7s ease, transform 0.7s ease',
+                transitionDelay: '0.45s',
+              }}
+            >
+              Capturer la beauté de la vie
+            </p>
+          </div>
+
+          {/* RIGHT — CTA + scroll indicator (desktop only) */}
+          <div
+            className="hidden md:flex flex-col items-end gap-10 flex-shrink-0"
+            style={{
+              opacity: loaded ? 1 : 0,
+              transform: loaded ? 'translateY(0)' : 'translateY(10px)',
+              transition: 'opacity 0.7s ease, transform 0.7s ease',
+              transitionDelay: '0.65s',
             }}
           >
-            NENAAPIC
-          </h1>
-          <p className="text-white/90 font-body font-light tracking-wide mb-8 text-lg animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            Capturer la beauté de la vie
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <Link
               to="/portfolio"
-              className="px-6 md:px-10 py-2 md:py-4 text-sm md:text-base bg-primary-yellow text-neutral-black font-medium tracking-wide hover:-translate-y-1 hover:shadow-lg transition-all duration-300 rounded-md"
+              className="text-white/65 text-[11px] uppercase tracking-[0.3em] hover:text-white transition-colors duration-300 border-b border-white/20 pb-1 hover:border-white/50 font-body"
             >
-              EXPLORER MON TRAVAIL
+              Explorer mon travail
             </Link>
-            <Link
-              to="/contact"
-              className="px-6 md:px-10 py-2 md:py-4 text-sm md:text-base border-2 border-white text-white font-medium tracking-wide hover:bg-white hover:text-neutral-black transition-all duration-300 rounded-md"
-            >
-              ME CONTACTER
-            </Link>
+
+            {/* Animated scroll indicator */}
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-white/30 text-[9px] uppercase tracking-[0.35em] font-body">Scroll</span>
+              <div className="relative w-px h-14 overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}>
+                <div
+                  className="scroll-drop absolute top-0 left-0 w-full"
+                  style={{ height: '45%', backgroundColor: 'rgba(244,211,94,0.7)' }}
+                />
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
-
-      {/* Decorative Lines - updated colors */}
-      <div className="absolute bottom-10 left-10 w-24 h-0.5 bg-primary-yellow"></div>
-      <div className="absolute top-10 right-10 w-16 h-16 border-2 border-primary-yellow rounded-full"></div>
     </section>
   );
 };

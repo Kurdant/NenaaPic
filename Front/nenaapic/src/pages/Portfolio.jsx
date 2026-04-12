@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useScrollAnimation from '../hooks/useScrollAnimation';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://185.216.26.204';
+
 const CirclePlusIcon = ({ className = '' }) => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className={className}>
     <circle cx="12" cy="12" r="11" />
@@ -23,15 +25,16 @@ const PortfolioCard = ({ item, index }) => {
     >
       <div className="h-[500px] overflow-hidden">
         <img
-          src={item.image}
-          alt={item.title}
+          src={item.directUrl || item.image}
+          alt={item.title || ''}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+          referrerPolicy="no-referrer"
         />
       </div>
       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-500 flex items-end">
         <div className="p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
           <p className="text-white/60 text-xs uppercase tracking-[0.2em] font-body mb-1">{item.category}</p>
-          <h3 className="text-white font-heading text-xl uppercase">{item.title}</h3>
+          <h3 className="text-white font-heading text-xl uppercase">{item.title || ''}</h3>
         </div>
       </div>
     </div>
@@ -41,6 +44,8 @@ const PortfolioCard = ({ item, index }) => {
 const Portfolio = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [heroVisible, setHeroVisible] = useState(false);
+  const [portfolioItems, setPortfolioItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [ctaRef, ctaVisible] = useScrollAnimation();
 
   useEffect(() => {
@@ -48,25 +53,29 @@ const Portfolio = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const portfolioItems = [
-    { id: 1, image: '/images/portfolio-1.jpg', category: 'mariages', title: 'Mariage Sarah & Thomas' },
-    { id: 2, image: '/images/portfolio-2.jpg', category: 'portraits', title: 'Portrait Studio' },
-    { id: 3, image: '/images/portfolio-3.jpg', category: 'couples', title: 'Séance Couple' },
-    { id: 4, image: '/images/portfolio-4.jpg', category: 'entreprise', title: 'Corporate Event' },
-    { id: 5, image: '/images/portfolio-5.jpg', category: 'mariages', title: 'Mariage Emma & Lucas' },
-    { id: 6, image: '/images/portfolio-6.jpg', category: 'portraits', title: 'Portrait Artistique' },
-    { id: 7, image: '/images/mariage-1.jpg', category: 'couples', title: 'Engagement Session' },
-    { id: 8, image: '/images/image_deco_1.jpg', category: 'entreprise', title: 'Team Building' },
-    { id: 9, image: '/images/image_deco_2.jpg', category: 'mariages', title: 'Mariage Julie & Marc' },
-  ];
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/gallery`);
+        const data = await res.json();
+        if (data.success) {
+          setPortfolioItems(data.images);
+        }
+      } catch (err) {
+        console.error('Erreur chargement galerie:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGallery();
+  }, []);
 
-  const categories = [
-    { id: 'all', label: 'TOUS' },
-    { id: 'mariages', label: 'MARIAGES' },
-    { id: 'portraits', label: 'PORTRAITS' },
-    { id: 'couples', label: 'COUPLES' },
-    { id: 'entreprise', label: 'ENTREPRISE' },
-  ];
+  // Build categories dynamically from available images
+  const dynamicCategories = ['all', ...new Set(portfolioItems.map(i => i.category).filter(Boolean))];
+  const categories = dynamicCategories.map(c => ({
+    id: c,
+    label: c === 'all' ? 'TOUS' : c.toUpperCase(),
+  }));
 
   const filteredItems = activeFilter === 'all'
     ? portfolioItems
@@ -114,11 +123,21 @@ const Portfolio = () => {
           </div>
 
           {/* Gallery Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredItems.map((item, index) => (
-              <PortfolioCard key={item.id} item={item} index={index} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <p className="text-white/30 font-body text-sm uppercase tracking-widest">Chargement...</p>
+            </div>
+          ) : portfolioItems.length === 0 ? (
+            <div className="flex justify-center py-20">
+              <p className="text-white/30 font-body text-sm uppercase tracking-widest">Aucune photo pour l'instant</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredItems.map((item, index) => (
+                <PortfolioCard key={item.id} item={item} index={index} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

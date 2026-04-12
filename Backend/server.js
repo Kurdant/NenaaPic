@@ -10,6 +10,35 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, 'uploads');
 const API_PASSWORD = process.env.API_PASSWORD || 'nenaapic1234';
+const GALLERY_FILE = path.join(__dirname, 'gallery.json');
+
+// Initialize gallery.json if it doesn't exist
+if (!fs.existsSync(GALLERY_FILE)) {
+  fs.writeFileSync(GALLERY_FILE, JSON.stringify([], null, 2));
+}
+
+// Helper: extract Google Drive file ID and build direct URL
+const cleanDriveUrl = (rawUrl) => {
+  const match = rawUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (!match) return null;
+  return {
+    fileId: match[1],
+    directUrl: `https://drive.google.com/uc?export=view&id=${match[1]}`,
+    thumbnailUrl: `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400`,
+  };
+};
+
+const readGallery = () => {
+  try {
+    return JSON.parse(fs.readFileSync(GALLERY_FILE, 'utf-8'));
+  } catch {
+    return [];
+  }
+};
+
+const writeGallery = (data) => {
+  fs.writeFileSync(GALLERY_FILE, JSON.stringify(data, null, 2));
+};
 
 // Create uploads directory if it doesn't exist
 if (!fs.existsSync(UPLOAD_DIR)) {
@@ -36,7 +65,15 @@ defaultCategories.forEach(category => {
 
 // Middleware - CORS DOIT ÊTRE EN PREMIER ⚠️
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173', 'https://nenaa-pic.kurdant.fr'], // 👈 Origines autorisées
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://nenaapic-test.kurdant.fr',
+    'https://nenaapic-test.kurdant.fr',
+    'https://nenaa-pic.kurdant.fr',
+    'http://185.216.26.204',
+    'http://185.216.26.204:3000',
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'x-api-password', 'Authorization'],
   credentials: true // 👈 Changé de false à true pour les headers personnalisés
@@ -239,6 +276,97 @@ app.get('/api/images', authenticate, (req, res) => {
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
+});
+
+// ========== GALLERY API (Google Drive URLs) ==========
+
+// GET /api/gallery — public, returns all gallery images
+app.get('/api/gallery', (req, res) => {
+  try {
+    const gallery = readGallery();
+    res.json({ success: true, count: gallery.length, images: gallery });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST /api/gallery — add one or multiple images (authenticated)
+app.post('/api/gallery', authenticate, (req, res) => {
+  try {
+    const { images } = req.body; // [{ url, title?, category? }]
+    if (!images || !Array.isArray(images) || images.length === 0) {
+      return res.status(400).json({ error: 'images array is required' });
+    }
+
+    const gallery = readGallery();
+    const added = [];
+
+    for (const img of images) {
+      if (!img.url) continue;
+      const cleaned = cleanDriveUrl(img.url);
+      if (!cleaned) {
+        added.push({ url: img.url, error: 'Invalid Google Drive URL' });
+        continue;
+      }
+
+      // Check for duplicate
+      if (gallery.some(g => g.fileId === cleaned.fileId)) {
+        added.push({ url: img.url, error: 'Already exists' });
+        continue;
+      }
+
+      const entry = {
+        id: crypto.randomUUID(),
+        fileId: cleaned.fileId,
+        directUrl: cleaned.directUrl,
+        thumbnailUrl: cleaned.thumbnailUrl,
+        originalUrl: img.url,
+        title: img.title || '',
+        category: img.category || 'portfolio',
+        addedAt: new Date().toISOString(),
+      };
+      gallery.push(entry);
+      added.push({ ...entry, status: 'added' });
+    }
+
+    writeGallery(gallery);
+    res.json({ success: true, added, total: gallery.length });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// DELETE /api/gallery/:id — remove an image by id (authenticated)
+app.delete('/api/gallery/:id', authenticate, (req, res) => {
+  try {
+    const gallery = readGallery();
+    const index = gallery.findIndex(g => g.id === req.params.id);
+    if (index === -1) {
+      return res.status(404).json({ error: 'Image not found' });
+    }
+    const removed = gallery.splice(index, 1)[0];
+    writeGallery(gallery);
+    res.json({ success: true, removed });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// PUT /api/gallery/:id — update title/category (authenticated)
+app.put('/api/gallery/:id', authenticate, (req, res) => {
+  try {
+    const gallery = readGallery();
+    const item = gallery.find(g => g.id === req.params.id);
+    if (!item) {
+      return res.status(404).json({ error: 'Image not found' });
+    }
+    if (req.body.title !== undefined) item.title = req.body.title;
+    if (req.body.category !== undefined) item.category = req.body.category;
+    writeGallery(gallery);
+    res.json({ success: true, updated: item });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 app.listen(PORT, () => {
