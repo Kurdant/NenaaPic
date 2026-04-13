@@ -5,12 +5,36 @@ const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, 'uploads');
 const API_PASSWORD = process.env.API_PASSWORD || 'nenaapic1234';
 const GALLERY_FILE = path.join(__dirname, 'gallery.json');
+const ADMIN_FILE = path.join(__dirname, 'admin.json');
+
+// JWT secret — set via env var on VPS, fallback for dev only
+const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
+const JWT_EXPIRY = '24h';
+
+// Initialize admin credentials if they don't exist
+const initAdmin = () => {
+  if (!fs.existsSync(ADMIN_FILE)) {
+    const defaultPassword = process.env.ADMIN_PASSWORD || 'NenaaPic2024!';
+    const hash = bcrypt.hashSync(defaultPassword, 12);
+    const admin = {
+      username: process.env.ADMIN_USERNAME || 'nenaapic',
+      passwordHash: hash,
+      createdAt: new Date().toISOString(),
+    };
+    fs.writeFileSync(ADMIN_FILE, JSON.stringify(admin, null, 2));
+    console.log('✅ Admin account created (username:', admin.username, ')');
+  }
+};
+initAdmin();
 
 // Initialize gallery.json if it doesn't exist
 if (!fs.existsSync(GALLERY_FILE)) {
@@ -76,20 +100,123 @@ app.use(cors({
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'x-api-password', 'Authorization'],
-  credentials: true // 👈 Changé de false à true pour les headers personnalisés
+  credentials: true
 }));
 
-// 👇 Gestion explicite des requêtes OPTIONS (preflight)
 app.options('*', cors());
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true, limit: '50mb' })); // 👈 Ajouté "extended: true"
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Rate limiting — anti-bruteforce on login
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 min
+  max: 10,
+  message: { error: 'Trop de tentatives de connexion. Réessaie dans 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // Serve static files from uploads
 app.use('/api/uploads', express.static(UPLOAD_DIR));
 
-// Authentication middleware
+// ========== AUTH SYSTEM (JWT) ==========
+
+// JWT middleware — verifies Bearer token
+const authenticateJWT = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Token manquant' });
+  }
+  try {
+    req.admin = jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
+    next();
+  } catch {
+    return res.status(401).json({ error: 'Token invalide ou expiré' });
+  }
+};
+
+// POST /api/auth/login
+app.post('/api/auth/login', loginLimiter, (req, res) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password || typeof username !== 'string' || typeof password !== 'string') {
+      return res.status(400).json({ error: 'Identifiant et mot de passe requis' });
+    }
+
+    const cleanUser = username.trim().substring(0, 50);
+    const cleanPass = password.substring(0, 128);
+
+    if (!fs.existsSync(ADMIN_FILE)) {
+      return res.status(500).json({ error: 'Admin not configured' });
+    }
+
+    const admin = JSON.parse(fs.readFileSync(ADMIN_FILE, 'utf-8'));
+
+    // Constant-time username comparison (prevents timing attacks)
+    const usernameMatch = cleanUser.length === admin.username.length &&
+      crypto.timingSafeEqual(Buffer.from(cleanUser), Buffer.from(admin.username));
+
+    if (!usernameMatch || !bcrypt.compareSync(cleanPass, admin.passwordHash)) {
+      return res.status(401).json({ error: 'Identifiant ou mot de passe incorrect' });
+    }
+
+    const token = jwt.sign(
+      { username: admin.username, role: 'admin' },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRY }
+    );
+
+    res.json({ success: true, token, expiresIn: JWT_EXPIRY, username: admin.username });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// GET /api/auth/verify
+app.get('/api/auth/verify', authenticateJWT, (req, res) => {
+  res.json({ success: true, username: req.admin.username });
+});
+
+// POST /api/auth/change-password
+app.post('/api/auth/change-password', authenticateJWT, (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Les deux mots de passe sont requis' });
+    }
+    if (newPassword.length < 8) {
+      return res.status(400).json({ error: 'Le nouveau mot de passe doit faire au moins 8 caractères' });
+    }
+
+    const admin = JSON.parse(fs.readFileSync(ADMIN_FILE, 'utf-8'));
+    if (!bcrypt.compareSync(currentPassword, admin.passwordHash)) {
+      return res.status(401).json({ error: 'Mot de passe actuel incorrect' });
+    }
+
+    admin.passwordHash = bcrypt.hashSync(newPassword, 12);
+    admin.updatedAt = new Date().toISOString();
+    fs.writeFileSync(ADMIN_FILE, JSON.stringify(admin, null, 2));
+    res.json({ success: true, message: 'Mot de passe modifié' });
+  } catch (error) {
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Legacy API password auth (kept for backward compat during transition)
 const authenticate = (req, res, next) => {
+  // Accept JWT Bearer token OR legacy x-api-password
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    try {
+      req.admin = jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
+      return next();
+    } catch {
+      return res.status(401).json({ error: 'Token invalide ou expiré' });
+    }
+  }
+
   const password = req.headers['x-api-password'] || req.body.password || req.query.password;
   if (password !== API_PASSWORD) {
     return res.status(401).json({ error: 'Unauthorized' });

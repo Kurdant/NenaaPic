@@ -2,6 +2,16 @@
 // Proxy API calls to VPS backend (bypasses Mixed Content restriction)
 $VPS_URL = 'http://185.216.26.204';
 
+// Handle CORS preflight FIRST (before any proxy logic)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, x-api-password, Authorization');
+    header('Access-Control-Max-Age: 86400');
+    http_response_code(204);
+    exit;
+}
+
 $path = $_GET['path'] ?? '/api/gallery';
 
 // Build target URL
@@ -53,10 +63,5 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, x-api-password, Authorization');
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(204);
-    exit;
-}
 
 echo $response;

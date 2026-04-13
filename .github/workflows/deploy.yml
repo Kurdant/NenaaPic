@@ -35,4 +35,4 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           local-dir: Front/nenaapic/build/
           server-dir: ${{ secrets.FTP_REMOTE_DIR }}
-          dangerous-clean-slate: false
+          dangerous-clean-slate: true

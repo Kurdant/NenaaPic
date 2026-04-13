@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { apiUrl } from '../utils/api';
-
-const API_PASSWORD = 'nenaapic1234';
+import { authFetch, logout, getToken } from '../utils/auth';
 
 const extractDriveId = (url) => {
   const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
@@ -84,12 +83,9 @@ const AdminUpload = () => {
     if (pendingImages.length === 0) return showMsg('Rien à publier', 'error');
     setPublishing(true);
     try {
-      const res = await fetch(apiUrl('/api/gallery'), {
+      const res = await authFetch('/api/gallery', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-password': API_PASSWORD,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           images: pendingImages.map(p => ({
             url: p.url,
@@ -99,6 +95,11 @@ const AdminUpload = () => {
         }),
       });
       const data = await res.json();
+      if (res.status === 401) {
+        showMsg('Session expirée — reconnexion requise', 'error');
+        setTimeout(() => logout(), 1500);
+        return;
+      }
       if (data.success) {
         const addedCount = data.added.filter(a => a.status === 'added').length;
         showMsg(`✅ ${addedCount} image(s) publiée(s) !`);
@@ -117,10 +118,12 @@ const AdminUpload = () => {
   const handleDelete = async (id, title) => {
     if (!window.confirm(`Supprimer "${title || 'cette image'}" ?`)) return;
     try {
-      const res = await fetch(apiUrl(`/api/gallery/${id}`), {
-        method: 'DELETE',
-        headers: { 'x-api-password': API_PASSWORD },
-      });
+      const res = await authFetch(`/api/gallery/${id}`, { method: 'DELETE' });
+      if (res.status === 401) {
+        showMsg('Session expirée — reconnexion requise', 'error');
+        setTimeout(() => logout(), 1500);
+        return;
+      }
       if (res.ok) {
         showMsg('✅ Image supprimée');
         fetchGallery();
@@ -134,9 +137,17 @@ const AdminUpload = () => {
     <div className="min-h-screen bg-[#0F1419]" style={{ paddingTop: '100px' }}>
       <div className="max-w-6xl mx-auto px-6 pb-20">
         {/* Header */}
-        <h1 className="font-heading text-4xl md:text-5xl text-white uppercase mb-2">
-          Galerie
-        </h1>
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="font-heading text-4xl md:text-5xl text-white uppercase">
+            Galerie
+          </h1>
+          <button
+            onClick={logout}
+            className="px-4 py-2 border border-white/20 text-white/50 font-body text-xs uppercase tracking-wider hover:border-red-400 hover:text-red-400 transition-colors"
+          >
+            Déconnexion
+          </button>
+        </div>
         <p className="font-body text-white/50 mb-10 text-sm tracking-wider">
           Ajoute des images depuis Google Drive
         </p>

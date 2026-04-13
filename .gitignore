@@ -1,0 +1,13 @@
+# Backend
+Backend/node_modules/
+Backend/admin.json
+Backend/gallery.json
+Backend/uploads/
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
