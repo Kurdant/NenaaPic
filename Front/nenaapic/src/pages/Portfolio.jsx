@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import useScrollAnimation from '../hooks/useScrollAnimation';
 import { apiUrl } from '../utils/api';
@@ -11,12 +11,60 @@ const CirclePlusIcon = ({ className = '' }) => (
   </svg>
 );
 
-const PortfolioCard = ({ item, index }) => {
+const Lightbox = ({ item, onClose }) => {
+  const handleKey = useCallback((e) => {
+    if (e.key === 'Escape') onClose();
+  }, [onClose]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', handleKey);
+      document.body.style.overflow = '';
+    };
+  }, [handleKey]);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+      onClick={onClose}
+    >
+      <button
+        onClick={onClose}
+        className="absolute top-5 right-6 text-white/60 hover:text-white text-3xl font-light transition-colors duration-200"
+        aria-label="Fermer"
+      >
+        ×
+      </button>
+      <div
+        className="max-w-[90vw] max-h-[90vh] flex flex-col items-center gap-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <img
+          src={item.thumbnailUrl || item.directUrl || item.image}
+          alt={item.title || ''}
+          className="max-w-full max-h-[80vh] object-contain"
+          referrerPolicy="no-referrer"
+        />
+        {(item.title || item.category) && (
+          <div className="text-center">
+            {item.category && <p className="text-white/40 text-xs uppercase tracking-[0.2em] font-body">{item.category}</p>}
+            {item.title && <p className="text-white font-heading text-lg uppercase mt-1">{item.title}</p>}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const PortfolioCard = ({ item, index, onOpen }) => {
   const [ref, isVisible] = useScrollAnimation();
 
   return (
     <div
       ref={ref}
+      onClick={() => onOpen(item)}
       className={`group relative overflow-hidden cursor-pointer transition-all duration-700 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}
@@ -40,11 +88,13 @@ const PortfolioCard = ({ item, index }) => {
   );
 };
 
+
 const Portfolio = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [heroVisible, setHeroVisible] = useState(false);
   const [portfolioItems, setPortfolioItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [lightboxItem, setLightboxItem] = useState(null);
   const [ctaRef, ctaVisible] = useScrollAnimation();
 
   useEffect(() => {
@@ -82,6 +132,7 @@ const Portfolio = () => {
 
   return (
     <div className="min-h-screen">
+      {lightboxItem && <Lightbox item={lightboxItem} onClose={() => setLightboxItem(null)} />}
       {/* Hero Section */}
       <section className="h-screen bg-black flex items-center justify-center relative">
         <div
@@ -133,7 +184,7 @@ const Portfolio = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredItems.map((item, index) => (
-                <PortfolioCard key={item.id} item={item} index={index} />
+                <PortfolioCard key={item.id} item={item} index={index} onOpen={setLightboxItem} />
               ))}
             </div>
           )}

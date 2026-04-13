@@ -8,7 +8,7 @@ const extractDriveId = (url) => {
 };
 
 const getDriveThumb = (fileId) =>
-  `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
+  `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`;
 
 const categories = [
   { id: 'mariages', label: 'Mariages', icon: '💍' },
@@ -338,7 +338,7 @@ const AdminUpload = () => {
                   <div key={img.id} className="group relative overflow-hidden border border-white/5">
                     <div className="aspect-square">
                       <img
-                        src={img.directUrl}
+                        src={img.thumbnailUrl || img.directUrl}
                         alt={img.title || ''}
                         className="w-full h-full object-cover"
                         loading="lazy"
