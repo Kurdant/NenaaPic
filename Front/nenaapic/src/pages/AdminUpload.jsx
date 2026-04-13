@@ -85,6 +85,7 @@ const AdminUpload = () => {
     setPublishing(true);
     try {
       const res = await fetch(apiUrl('/api/gallery'), {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-api-password': API_PASSWORD,
