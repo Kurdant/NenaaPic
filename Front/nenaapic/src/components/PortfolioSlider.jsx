@@ -88,7 +88,7 @@ const PortfolioSlider = () => {
             }}
           >
             <img
-              src={slide.directUrl || slide.image}
+              src={slide.thumbnailUrl || slide.directUrl || slide.image}
               alt={slide.title || ''}
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
