@@ -93,8 +93,8 @@ app.use(cors({
   origin: [
     'http://localhost:3000',
     'http://localhost:5173',
-    'http://nenaapic-test.kurdant.fr',
-    'https://nenaapic-test.kurdant.fr',
+    'http://nenaapic.com',
+    'https://nenaapic.com',
     'https://nenaa-pic.kurdant.fr',
     'http://185.216.26.204',
     'http://185.216.26.204:3000',
