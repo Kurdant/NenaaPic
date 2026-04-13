@@ -59,22 +59,22 @@ const ServicesSection = () => {
     { 
       name: 'Mariages', 
       description: 'Immortaliser le plus beau jour de votre vie',
-      image: `${API_URL}/api/uploads/services/mariage.jpg`
+      image: '/images/mariage-1.jpg'
     },
     { 
       name: 'Portraits', 
       description: 'Révéler votre personnalité unique',
-      image: `${API_URL}/api/uploads/services/portraits.jpg`
+      image: '/images/portfolio-2.jpg'
     },
     { 
       name: 'Entreprise', 
       description: 'Valoriser votre image professionnelle',
-      image: `${API_URL}/api/uploads/services/entreprise.jpg`
+      image: '/images/image_deco_1.jpg'
     },
     { 
       name: 'Couples', 
       description: 'Capturer votre histoire d\'amour',
-      image: `${API_URL}/api/uploads/services/couples.jpg`
+      image: '/images/portfolio-5.jpg'
     }
   ];
 
@@ -146,12 +146,12 @@ const ServicesSection = () => {
 
 const PortfolioSection = () => {
   const portfolioImages = [
-    `${API_URL}/api/uploads/portfolio/mariage/photo1.jpg`,
-    `${API_URL}/api/uploads/portfolio/mariage/photo2.jpg`,
-    `${API_URL}/api/uploads/portfolio/portraits/photo1.jpg`,
-    `${API_URL}/api/uploads/portfolio/entreprise/photo1.jpg`,
-    `${API_URL}/api/uploads/portfolio/couples/photo1.jpg`,
-    `${API_URL}/api/uploads/portfolio/evenements/photo1.jpg`,
+    '/images/portfolio-1.jpg',
+    '/images/portfolio-2.jpg',
+    '/images/portfolio-3.jpg',
+    '/images/portfolio-4.jpg',
+    '/images/portfolio-5.jpg',
+    '/images/portfolio-6.jpg',
   ];
 
   return (
