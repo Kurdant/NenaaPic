@@ -65,7 +65,7 @@ const HeroBannerV2 = () => {
                 transitionDelay: '0.1s',
               }}
             >
-              Photographe — Nice, France et gros caca
+              Photographe — Nice, France et gros caca de test
             </span>
 
             <h1
