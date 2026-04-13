@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { apiUrl } from '../utils/api';
-import { authFetch, logout, getToken } from '../utils/auth';
+import { authFetch, logout } from '../utils/auth';
 
 const extractDriveId = (url) => {
   const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
