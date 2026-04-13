@@ -24,7 +24,7 @@ const PortfolioCard = ({ item, index }) => {
     >
       <div className="h-[500px] overflow-hidden">
         <img
-          src={item.directUrl || item.image}
+          src={item.thumbnailUrl || item.directUrl || item.image}
           alt={item.title || ''}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
           referrerPolicy="no-referrer"

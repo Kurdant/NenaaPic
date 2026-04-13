@@ -49,7 +49,7 @@ const cleanDriveUrl = (rawUrl) => {
   return {
     fileId: match[1],
     directUrl: `https://drive.google.com/uc?export=view&id=${match[1]}`,
-    thumbnailUrl: `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400`,
+    thumbnailUrl: `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1200`,
   };
 };
 
