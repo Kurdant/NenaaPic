@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import useScrollAnimation from '../hooks/useScrollAnimation';
+
+const InstagramIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+    <circle cx="12" cy="12" r="4" />
+    <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
+  </svg>
+);
+
+const PROJECT_TYPES = ['Mariage', 'Portrait', 'Sport', 'Couple', 'Entreprise', 'Autre'];
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -7,15 +16,11 @@ const Contact = () => {
     email: '',
     phone: '',
     projectType: '',
-    budget: '',
     message: ''
   });
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [heroVisible, setHeroVisible] = useState(false);
-  const [formRef, formVisible] = useScrollAnimation();
-  const [infoRef, infoVisible] = useScrollAnimation();
 
   useEffect(() => {
     const timer = setTimeout(() => setHeroVisible(true), 100);
@@ -27,15 +32,19 @@ const Contact = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const selectProject = (type) => {
+    setFormData(prev => ({ ...prev, projectType: type }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 1500));
       setSubmitStatus('success');
-      setFormData({ name: '', email: '', phone: '', projectType: '', budget: '', message: '' });
-      setTimeout(() => setSubmitStatus(null), 3000);
-    } catch (error) {
+      setFormData({ name: '', email: '', phone: '', projectType: '', message: '' });
+      setTimeout(() => setSubmitStatus(null), 4000);
+    } catch {
       setSubmitStatus('error');
       setTimeout(() => setSubmitStatus(null), 3000);
     } finally {
@@ -43,145 +52,148 @@ const Contact = () => {
     }
   };
 
-  const inputClasses = "w-full bg-transparent border-b border-black/20 text-[#0F1419] placeholder-black/40 focus:outline-none focus:border-[#0F1419] transition-colors duration-300 py-3 font-body";
+  const inputClasses = "w-full bg-transparent border-b border-white/20 text-white placeholder-white/30 focus:outline-none focus:border-white/60 transition-colors duration-300 py-4 font-body text-sm tracking-wide";
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="h-screen bg-black flex items-center justify-center">
+    <div className="min-h-screen bg-black">
+
+      {/* ── HERO SPLIT ── */}
+      <section className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+
+        {/* LEFT — headline + project selector */}
         <div
-          className={`text-center transition-all duration-1000 ${
+          className={`flex flex-col justify-end p-10 md:p-16 pb-16 md:pb-20 transition-all duration-1000 ${
             heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}
         >
           <h1
-            className="font-heading font-bold uppercase text-white tracking-wide mb-6"
-            style={{ fontSize: 'clamp(3rem, 8vw, 7rem)' }}
+            className="font-heading text-white uppercase leading-[0.92] mb-10"
+            style={{ fontSize: 'clamp(3rem, 6vw, 5.5rem)' }}
           >
-            CONTACTEZ-MOI
+            CRÉONS<br />
+            QUELQUE CHOSE{' '}
+            <span className="italic">D'UNIQUE.</span>
           </h1>
-          <p className="font-body text-white/75 text-lg tracking-wide">
-            Parlons de votre projet
+
+          <p className="font-body text-white/50 uppercase tracking-[0.2em] text-xs mb-5">
+            CHOISISSEZ VOTRE PROJET :
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {PROJECT_TYPES.map((type) => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => selectProject(type)}
+                className={`font-body text-sm px-5 py-2 border transition-all duration-200 tracking-wide ${
+                  formData.projectType === type
+                    ? 'bg-white text-black border-white'
+                    : 'bg-transparent text-white border-white/30 hover:border-white/70'
+                }`}
+              >
+                {type}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* RIGHT — large italic phrase */}
+        <div
+          className={`hidden lg:flex items-center justify-center p-16 border-l border-white/10 transition-all duration-1000 delay-200 ${
+            heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}
+        >
+          <p
+            className="font-heading italic text-white/80 text-center leading-snug"
+            style={{ fontSize: 'clamp(1.5rem, 3vw, 2.8rem)' }}
+          >
+            CHOISISSEZ VOTRE TYPE DE PROJET,<br />
+            REMPLISSEZ LE FORMULAIRE<br />
+            ET C'EST PARTI.
           </p>
         </div>
       </section>
 
-      {/* Form + Info Section */}
-      <section className="bg-[#FBF7EF] py-20 px-4 md:px-8">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+      {/* ── FORM SECTION ── */}
+      <section
+        className="relative py-24 px-8 md:px-16 border-t border-white/10"
+        style={{
+          backgroundImage: 'url(/images/image_deco_2.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="absolute inset-0" style={{ backgroundColor: 'rgba(0,0,0,0.88)' }} />
+
+        <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
+
           {/* Form */}
-          <div
-            ref={formRef}
-            className={`transition-all duration-700 ${
-              formVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-            }`}
-          >
+          <div>
             <h2
-              className="font-heading font-bold uppercase text-[#0F1419] mb-2"
-              style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)' }}
+              className="font-heading uppercase text-white mb-2"
+              style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}
             >
-              PARLONS ENSEMBLE
+              CONTACTEZ-MOI
             </h2>
-            <p className="font-body text-[#2C3E50] mb-10">
-              Envoyez-moi un message et je vous répondrai dans les meilleurs délais.
+            <p className="font-body text-white/50 text-sm tracking-wide mb-12">
+              Parlons de votre projet
             </p>
 
-            <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className={inputClasses}
-                    placeholder="Votre nom"
-                  />
-                </div>
-                <div>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className={inputClasses}
-                    placeholder="Votre email"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <select
-                    name="projectType"
-                    value={formData.projectType}
-                    onChange={handleChange}
-                    className={`${inputClasses} cursor-pointer`}
-                  >
-                    <option value="">Type de projet</option>
-                    <option value="mariage">Mariage</option>
-                    <option value="portrait">Portrait</option>
-                    <option value="couple">Couple</option>
-                    <option value="entreprise">Entreprise</option>
-                    <option value="autre">Autre</option>
-                  </select>
-                </div>
-                <div>
-                  <select
-                    name="budget"
-                    value={formData.budget}
-                    onChange={handleChange}
-                    className={`${inputClasses} cursor-pointer`}
-                  >
-                    <option value="">Budget estimé</option>
-                    <option value="< 500€">&lt; 500€</option>
-                    <option value="500-1000€">500 - 1 000€</option>
-                    <option value="1000-2000€">1 000 - 2 000€</option>
-                    <option value="> 2000€">&gt; 2 000€</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="mb-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className={inputClasses}
-                  placeholder="Téléphone (optionnel)"
-                />
-              </div>
-
-              <div className="mb-10">
-                <textarea
-                  name="message"
-                  value={formData.message}
+                  type="text"
+                  name="name"
+                  value={formData.name}
                   onChange={handleChange}
                   required
-                  rows="4"
-                  className={`${inputClasses} resize-none`}
-                  placeholder="Parlez-moi de votre projet..."
+                  className={inputClasses}
+                  placeholder="Votre nom"
+                />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className={inputClasses}
+                  placeholder="Votre email"
                 />
               </div>
 
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className={inputClasses}
+                placeholder="Téléphone (optionnel)"
+              />
+
+              <textarea
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                required
+                rows="4"
+                className={`${inputClasses} resize-none`}
+                placeholder="Parlez-moi de votre projet..."
+              />
+
               {submitStatus === 'success' && (
-                <div className="mb-6 py-3 text-center font-body text-sm text-[#0F1419]/70">
+                <p className="text-white/60 text-sm text-center">
                   Merci, votre message a été envoyé avec succès.
-                </div>
+                </p>
               )}
               {submitStatus === 'error' && (
-                <div className="mb-6 py-3 text-center font-body text-sm text-red-600/70">
+                <p className="text-red-400/70 text-sm text-center">
                   Une erreur est survenue. Veuillez réessayer.
-                </div>
+                </p>
               )}
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-[#0F1419] text-white font-body text-sm uppercase tracking-[0.2em] py-4 hover:opacity-80 transition-opacity duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="mt-4 bg-white text-black font-body text-xs uppercase tracking-[0.25em] px-10 py-4 hover:bg-white/80 transition-colors duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? 'ENVOI EN COURS...' : 'ENVOYER'}
               </button>
@@ -189,82 +201,56 @@ const Contact = () => {
           </div>
 
           {/* Info */}
-          <div
-            ref={infoRef}
-            className={`transition-all duration-700 ${
-              infoVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-            }`}
-            style={{ transitionDelay: '100ms' }}
-          >
-            <div className="space-y-10">
+          <div className="flex flex-col justify-between gap-10">
+            <div className="space-y-8">
               <div>
-                <h3
-                  className="font-heading font-bold uppercase text-[#0F1419] mb-8"
-                  style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)' }}
+                <p className="font-body text-white/40 text-xs uppercase tracking-[0.2em] mb-2">Localisation</p>
+                <p className="font-body text-white text-base">Nice, Côte d'Azur</p>
+              </div>
+              <div>
+                <p className="font-body text-white/40 text-xs uppercase tracking-[0.2em] mb-2">Email</p>
+                <a
+                  href="mailto:elensapic@gmail.com"
+                  className="font-body text-white text-base hover:text-white/60 transition-colors duration-300"
                 >
-                  INFORMATIONS
-                </h3>
-                <div className="space-y-6">
-                  <div>
-                    <p className="font-body text-[#0F1419] font-medium mb-1">Localisation</p>
-                    <p className="font-body text-[#2C3E50]">Nice, Côte d'Azur</p>
-                  </div>
-                  <div>
-                    <p className="font-body text-[#0F1419] font-medium mb-1">Email</p>
-                    <a
-                      href="mailto:contact@nenaapic.com"
-                      className="font-body text-[#2C3E50] hover:text-[#0F1419] transition-colors duration-300"
-                    >
-                      contact@nenaapic.com
-                    </a>
-                  </div>
-                  <div>
-                    <p className="font-body text-[#0F1419] font-medium mb-1">Téléphone</p>
-                    <a
-                      href="tel:+33600000000"
-                      className="font-body text-[#2C3E50] hover:text-[#0F1419] transition-colors duration-300"
-                    >
-                      +33 6 00 00 00 00
-                    </a>
-                  </div>
-                </div>
+                  elensapic@gmail.com
+                </a>
               </div>
-
-              {/* Social Links */}
               <div>
-                <p className="font-body text-[#0F1419] font-medium mb-4">Réseaux sociaux</p>
-                <div className="flex gap-6">
-                  <a
-                    href="https://instagram.com/nenaapic"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-body text-sm text-[#2C3E50] uppercase tracking-[0.15em] hover:text-[#0F1419] transition-colors duration-300"
-                  >
-                    Instagram
-                  </a>
-                  <a
-                    href="https://facebook.com/nenaapic"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-body text-sm text-[#2C3E50] uppercase tracking-[0.15em] hover:text-[#0F1419] transition-colors duration-300"
-                  >
-                    Facebook
-                  </a>
-                </div>
-              </div>
-
-              {/* Image */}
-              <div className="overflow-hidden">
-                <img
-                  src="/images/image_deco_5.jpg"
-                  alt="Contact NenaaPic"
-                  className="w-full h-[400px] object-cover"
-                />
+                <p className="font-body text-white/40 text-xs uppercase tracking-[0.2em] mb-2">Instagram</p>
+                <a
+                  href="https://www.instagram.com/nenaa_pic/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 font-body text-white text-base hover:text-white/60 transition-colors duration-300"
+                >
+                  <InstagramIcon />
+                  @nenaa_pic
+                </a>
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* ── BOTTOM BAR ── */}
+      <div className="bg-black border-t border-white/10 px-8 md:px-16 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <a
+          href="https://www.instagram.com/nenaa_pic/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 font-body text-xs uppercase tracking-[0.25em] text-white/50 hover:text-white transition-colors duration-300"
+        >
+          <InstagramIcon />
+          NOTRE INSTAGRAM ↗
+        </a>
+        <a
+          href="mailto:elensapic@gmail.com"
+          className="font-body text-xs text-white/30 hover:text-white/60 transition-colors duration-300 tracking-wide"
+        >
+          elensapic@gmail.com
+        </a>
+      </div>
     </div>
   );
 };

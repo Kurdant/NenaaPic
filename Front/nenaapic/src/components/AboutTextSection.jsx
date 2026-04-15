@@ -47,16 +47,19 @@ const AboutTextSection = () => {
           }`}
         >
           <p className="text-white/75 text-sm md:text-base leading-relaxed text-left font-body">
-            Photographe passionnée basée à Nice, mon travail transcende la capture traditionnelle. 
-            Je me concentre sur la création d'images artistiques, pleines d'élégance et de style. 
-            Chaque image est méticuleusement conçue avec un œil aiguisé pour le détail, 
-            transformant les moments en déclarations visuelles intemporelles.
+            Photographe passionnée basée à Nice, mon travail va au-delà de la simple capture d'images. 
+            Chaque photographie est une rencontre — un instant où je ne cherche pas à transformer, 
+            mais à révéler une facette de votre réalité, unique, sincère et profondément personnelle.
+            Je crée des images artistiques, empreintes d'élégance et de style, où chaque détail est pensé 
+            avec précision. Mon regard, à la fois sensible et instinctif, me guide pour saisir des moments 
+            vrais, où les émotions peuvent pleinement s'exprimer.
           </p>
           <p className="text-white/75 text-sm md:text-base leading-relaxed text-left font-body">
-            Que ce soit pour capturer la beauté d'un mariage, l'émotion d'un portrait, 
-            ou l'essence d'une marque, je mets en lumière la personnalité unique de chaque sujet. 
-            Mon approche mêle esthétique haut de gamme et sensibilité contemporaine, 
-            pour des images à la fois iconiques et profondément personnelles.
+            Qu'il s'agisse de capturer la beauté d'un mariage, l'intensité d'un portrait, le sport ou 
+            l'essence d'une marque, je mets en lumière ce qui vous rend unique. Mon approche mêle une 
+            esthétique haut de gamme à une sensibilité contemporaine, pour des images à la fois iconiques 
+            et intemporelles. La lumière, les couleurs, les textures… tout est travaillé avec soin pour 
+            sublimer sans dénaturer. Plus qu'une photographie, c'est une expérience — la vôtre.
           </p>
         </div>
 

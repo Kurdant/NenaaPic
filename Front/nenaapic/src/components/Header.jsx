@@ -24,6 +24,7 @@ const Header = () => {
     { label: 'HOME', href: '/' },
     { label: 'PORTFOLIO', href: '/portfolio' },
     { label: 'SERVICES', href: '/services' },
+    { label: 'SPORT', href: '/sport' },
     { label: 'À PROPOS', href: '/about' },
     { label: 'CONTACT', href: '/contact' },
   ];
@@ -70,15 +71,19 @@ const Header = () => {
         .nav-menu-item:nth-child(3) { animation-delay: 0.25s; }
         .nav-menu-item:nth-child(4) { animation-delay: 0.30s; }
         .nav-menu-item:nth-child(5) { animation-delay: 0.35s; }
+        .nav-menu-item:nth-child(6) { animation-delay: 0.40s; }
       `}</style>
 
-      {/* Floating Logo — top-left */}
       <Link
         to="/"
-        className="fixed top-6 left-6 md:top-8 md:left-10 z-[51] font-heading font-bold text-white text-lg md:text-xl tracking-[0.15em] hover:text-primary-yellow transition-colors duration-300"
+        className="fixed top-6 left-6 md:top-8 md:left-10 z-[51] hover:opacity-80 transition-opacity duration-300"
         style={{ textDecoration: 'none' }}
       >
-        NENAAPIC
+        <img
+          src="/images/logov2.png"
+          alt="NenaaPic"
+          className="h-10 md:h-12 w-auto object-contain"
+        />
       </Link>
 
       {/* Floating Burger — top-right */}

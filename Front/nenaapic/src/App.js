@@ -10,6 +10,7 @@ import Portfolio from './pages/Portfolio';
 import Contact from './pages/Contact';
 import AdminUpload from './pages/AdminUpload';
 import LoginPage from './pages/LoginPage';
+import Sport from './pages/Sport';
 import './App.css';
 
 const AppContent = () => {
@@ -25,6 +26,7 @@ const AppContent = () => {
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Services />} />
         <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/sport" element={<Sport />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/admin" element={

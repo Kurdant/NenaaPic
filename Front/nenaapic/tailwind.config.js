@@ -27,7 +27,7 @@ module.exports = {
         gold: '#D4AF37',
       },
       fontFamily: {
-        heading: ['Playfair Display', 'serif'],
+        heading: ['Didot', 'Didot LT STD', 'GFS Didot', 'serif'],
         body: ['Inter', 'Helvetica Neue', 'sans-serif'],
       },
       fontSize: {

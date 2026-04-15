@@ -55,8 +55,8 @@ const About = () => {
         >
           <div className="overflow-hidden">
             <img
-              src="/images/banner_2.JPG"
-              alt="NenaaPic - Photographe"
+              src="/images/backgroundNenaaChargement.PNG"
+              alt="NenaaPic — Photographe"
               className="w-full h-[600px] object-cover"
             />
           </div>
@@ -69,13 +69,31 @@ const About = () => {
               MA PASSION, VOTRE HISTOIRE
             </h2>
             <p className="font-body text-[#2C3E50] text-lg leading-relaxed">
-              Photographe passionnée basée à Nice, je capture l'essence de vos moments les plus précieux.
-              Chaque cliché raconte une histoire unique, empreinte d'émotion et d'authenticité.
+              Photographe passionnée basée à Nice, mon travail va au-delà de la simple capture d'images.
+              Chaque photographie est une rencontre — un instant où je ne cherche pas à transformer,
+              mais à révéler une facette de votre réalité, unique, sincère et profondément personnelle.
             </p>
             <p className="font-body text-[#2C3E50] text-lg leading-relaxed">
-              Mon approche artistique combine technique professionnelle et sensibilité créative
-              pour créer des images intemporelles qui vous ressemblent.
+              Je crée des images artistiques, empreintes d'élégance et de style, où chaque détail est
+              pensé avec précision. Mon regard, à la fois sensible et instinctif, me guide pour saisir
+              des moments vrais, où les émotions peuvent pleinement s'exprimer.
             </p>
+
+            {/* Instagram */}
+            <a
+              href="https://www.instagram.com/nenaa_pic/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 text-[#0F1419] font-body text-sm uppercase tracking-[0.2em] hover:opacity-60 transition-opacity duration-300 pt-2"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
+              </svg>
+              @nenaa_pic
+            </a>
+
             <Link
               to="/portfolio"
               className="inline-flex items-center gap-3 text-[#0F1419] font-body text-sm uppercase tracking-[0.2em] hover:opacity-70 transition-opacity duration-300 pt-4"
@@ -150,34 +168,41 @@ const About = () => {
       </section>
 
       {/* Mission Section */}
-      <section className="bg-[#FBF7EF] py-20 px-4 md:px-8">
+      <section
+        className="relative py-24 px-4 md:px-8"
+        style={{
+          backgroundImage: 'url(/images/image_deco_1.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="absolute inset-0" style={{ backgroundColor: 'rgba(15,20,25,0.72)' }} />
         <div
           ref={missionRef}
-          className={`max-w-5xl mx-auto transition-all duration-700 ${
+          className={`relative z-10 max-w-5xl mx-auto transition-all duration-700 ${
             missionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}
         >
           <h2
-            className="font-heading font-bold uppercase text-[#0F1419] text-center mb-12"
+            className="font-heading font-bold uppercase text-white text-center mb-12"
             style={{ fontSize: 'clamp(1.8rem, 4vw, 3.5rem)' }}
           >
-            MA MISSION
+            PRENDRE CONTACT
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
-            <p className="font-body text-[#2C3E50] text-lg leading-relaxed">
-              Ma mission est de créer des images qui transcendent le temps.
-              Je crois en la puissance de la photographie pour capturer l'émotion brute
-              et raconter des histoires authentiques.
+          <div className="max-w-3xl mx-auto mb-12 text-center">
+            <p className="font-body text-white/80 text-lg leading-relaxed mb-6">
+              Envie de créer quelque chose qui vous ressemble vraiment ?
             </p>
-            <p className="font-body text-[#2C3E50] text-lg leading-relaxed">
-              Chaque client est unique, et mon approche personnalisée garantit
-              que votre vision prenne vie à travers mon objectif. Ensemble, créons quelque chose d'extraordinaire.
+            <p className="font-body text-white/70 text-base leading-relaxed">
+              Que ce soit pour votre mariage, un portrait ou un projet créatif, je serais ravie
+              d'échanger avec vous, de découvrir votre univers et vos envies. Chaque projet commence
+              par une rencontre, une discussion, une idée qui prend forme.
             </p>
           </div>
           <div className="text-center">
             <Link
               to="/contact"
-              className="inline-flex items-center gap-3 text-[#0F1419] font-body text-sm uppercase tracking-[0.2em] hover:opacity-70 transition-opacity duration-300"
+              className="inline-flex items-center gap-3 text-white font-body text-sm uppercase tracking-[0.2em] hover:opacity-70 transition-opacity duration-300 border-b border-white/40 pb-1"
             >
               CONTACTEZ-MOI
               <CirclePlusIcon />
