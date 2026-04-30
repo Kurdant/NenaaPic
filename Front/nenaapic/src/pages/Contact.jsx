@@ -39,14 +39,22 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitStatus(null);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const apiBase = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000';
+      const res = await fetch(`${apiBase}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur serveur');
       setSubmitStatus('success');
       setFormData({ name: '', email: '', phone: '', projectType: '', message: '' });
+      setTimeout(() => setSubmitStatus(null), 5000);
+    } catch (err) {
+      setSubmitStatus(err.message || 'error');
       setTimeout(() => setSubmitStatus(null), 4000);
-    } catch {
-      setSubmitStatus('error');
-      setTimeout(() => setSubmitStatus(null), 3000);
     } finally {
       setIsSubmitting(false);
     }

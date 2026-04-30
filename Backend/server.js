@@ -8,6 +8,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
+const nodemailer = require('nodemailer');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -498,6 +499,60 @@ app.put('/api/gallery/:id', authenticate, (req, res) => {
     res.json({ success: true, updated: item });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// ========== CONTACT FORM ==========
+
+const contactLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10,
+  message: { error: 'Trop de messages envoyés. Réessaie dans une heure.' },
+});
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+  },
+});
+
+// POST /api/contact
+app.post('/api/contact', contactLimiter, async (req, res) => {
+  try {
+    const { name, email, phone, projectType, message } = req.body;
+
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: 'Nom, email et message sont requis.' });
+    }
+
+    const mailOptions = {
+      from: `"NenaaPic Contact" <${process.env.MAIL_USER}>`,
+      to: process.env.MAIL_TO || 'elensapic@gmail.com',
+      replyTo: email,
+      subject: `[NenaaPic] Nouveau contact — ${projectType || 'Projet non précisé'}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 24px; background: #0F1419; color: #fff; border-radius: 8px;">
+          <h2 style="margin-top:0; letter-spacing: 0.2em; text-transform: uppercase;">Nouveau message</h2>
+          <table style="width:100%; border-collapse:collapse;">
+            <tr><td style="padding:8px 0; color:#aaa; width:140px;">Nom</td><td style="padding:8px 0;">${name}</td></tr>
+            <tr><td style="padding:8px 0; color:#aaa;">Email</td><td style="padding:8px 0;"><a href="mailto:${email}" style="color:#F4D35E;">${email}</a></td></tr>
+            <tr><td style="padding:8px 0; color:#aaa;">Téléphone</td><td style="padding:8px 0;">${phone || '—'}</td></tr>
+            <tr><td style="padding:8px 0; color:#aaa;">Projet</td><td style="padding:8px 0;">${projectType || '—'}</td></tr>
+          </table>
+          <hr style="border:none; border-top:1px solid #333; margin:20px 0;">
+          <p style="color:#aaa; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.1em; font-size:12px;">Message</p>
+          <p style="white-space: pre-line; line-height:1.6;">${message}</p>
+        </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Contact email error:', error.message);
+    res.status(500).json({ error: 'Impossible d\'envoyer le message. Réessaie plus tard.' });
   }
 });
 
