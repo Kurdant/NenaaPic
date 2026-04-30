@@ -24,7 +24,8 @@ jobs:
 
       - name: Build React app
         env:
-          REACT_APP_API_URL: https://nenaapic.com
+          REACT_APP_API_URL: https://api.nenaapic.com
+
         run: cd Front/nenaapic && npm run build
 
       - name: Deploy to Hostinger via FTP

@@ -11,6 +11,7 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 app.set('trust proxy', 1);
+app.disable('x-powered-by');
 const PORT = process.env.PORT || 5000;
 const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, 'uploads');
 const API_PASSWORD = process.env.API_PASSWORD || 'nenaapic1234';
@@ -89,12 +90,15 @@ defaultCategories.forEach(category => {
 });
 
 // Middleware - CORS DOIT ÊTRE EN PREMIER ⚠️
-app.use(cors({
+const corsOptions = {
   origin: [
     'http://localhost:3000',
     'http://localhost:5173',
-    'http://nenaapic.com',
     'https://nenaapic.com',
+    'https://www.nenaapic.com',
+    'https://api.nenaapic.com',
+    'http://nenaapic-test.kurdant.fr',
+    'https://nenaapic-test.kurdant.fr',
     'https://nenaa-pic.kurdant.fr',
     'http://185.216.26.204',
     'http://185.216.26.204:3000',
@@ -102,9 +106,9 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'x-api-password', 'Authorization'],
   credentials: true
-}));
-
-app.options('*', cors());
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
@@ -497,9 +501,18 @@ app.put('/api/gallery/:id', authenticate, (req, res) => {
   }
 });
 
+// Global error handler — catches URIError from malformed encoded paths (e.g. /%C0)
+app.use((err, req, res, next) => {
+  if (err instanceof URIError) {
+    return res.status(400).json({ error: 'Bad Request' });
+  }
+  console.error(err.stack);
+  res.status(500).json({ error: 'Internal Server Error' });
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Uploads directory: ${UPLOAD_DIR}`);
   console.log('Default categories created');
-  console.log('CORS enabled for:', ['http://localhost:3000', 'http://localhost:5173', 'https://nenaa-pic.kurdant.fr']);
+  console.log('CORS enabled for:', ['https://nenaapic.com', 'https://nenaapic-test.kurdant.fr', 'https://nenaa-pic.kurdant.fr']);
 });
