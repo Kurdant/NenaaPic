@@ -102,7 +102,6 @@ const CategoryCard = ({ category, index, onSelect }) => {
       }`}
       style={{
         height: '90vh',
-        marginBottom: '6vh',
         transitionDelay: `${(index % 3) * 80}ms`,
       }}
     >
@@ -120,8 +119,8 @@ const CategoryCard = ({ category, index, onSelect }) => {
       {/* Title bottom-left */}
       <div className="absolute left-0 right-0 bottom-0 px-6 md:px-10 pb-8 md:pb-10 flex items-end justify-between">
         <h2
-          className="font-heading font-bold uppercase text-white"
-          style={{ fontSize: 'clamp(2rem, 6vw, 5rem)', letterSpacing: '0.02em', lineHeight: 1 }}
+          className="font-heading uppercase text-white"
+          style={{ fontSize: 'clamp(1.4rem, 3.5vw, 3rem)', letterSpacing: '0.04em', lineHeight: 1, fontWeight: 400 }}
         >
           {category.label}
         </h2>
