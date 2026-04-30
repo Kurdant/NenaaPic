@@ -17,6 +17,7 @@ const GetInTouchSection = () => {
 
   return (
     <section
+      data-light-bg
       className="flex-1 w-full flex items-center justify-center overflow-hidden"
       style={{ backgroundColor: '#FBF7EF' }}
     >

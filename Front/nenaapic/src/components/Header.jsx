@@ -3,11 +3,36 @@ import { Link, useLocation } from 'react-router-dom';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [onLightBg, setOnLightBg] = useState(false);
   const location = useLocation();
 
   // Close menu on route change
   useEffect(() => {
     setIsOpen(false);
+  }, [location]);
+
+  // Detect when logo is overlapping a light-bg section
+  useEffect(() => {
+    const checkBg = () => {
+      // Logo is at fixed top-left; check element behind a representative point
+      const x = window.innerWidth >= 768 ? 60 : 35;
+      const y = window.innerWidth >= 768 ? 60 : 35;
+      const el = document.elementFromPoint(x, y);
+      if (!el) {
+        setOnLightBg(false);
+        return;
+      }
+      const lightAncestor = el.closest('[data-light-bg]');
+      setOnLightBg(!!lightAncestor);
+    };
+
+    checkBg();
+    window.addEventListener('scroll', checkBg, { passive: true });
+    window.addEventListener('resize', checkBg);
+    return () => {
+      window.removeEventListener('scroll', checkBg);
+      window.removeEventListener('resize', checkBg);
+    };
   }, [location]);
 
   // Lock body scroll when menu is open
@@ -76,7 +101,7 @@ const Header = () => {
       <Link
         to="/"
         className="fixed top-6 left-6 md:top-8 md:left-10 z-[51] hover:opacity-80 transition-opacity duration-300"
-        style={{ textDecoration: 'none', mixBlendMode: 'difference' }}
+        style={{ textDecoration: 'none', mixBlendMode: onLightBg ? 'difference' : 'normal' }}
       >
         <img
           src="/images/logov2.png"

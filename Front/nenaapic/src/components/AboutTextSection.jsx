@@ -21,7 +21,7 @@ const AboutTextSection = () => {
         {/* Giant title */}
         <div
           ref={titleRef}
-          className={`mb-12 transition-all duration-700 ${
+          className={`mt-20 mb-12 transition-all duration-700 ${
             titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}
         >

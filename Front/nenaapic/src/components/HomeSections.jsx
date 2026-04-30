@@ -328,6 +328,7 @@ const TestimonialSection = () => {
 const ContactSection = () => {
   return (
     <section 
+      data-light-bg
       className="py-32 px-8 relative overflow-hidden"
       style={{ backgroundColor: '#FAF8F5' }}
     >

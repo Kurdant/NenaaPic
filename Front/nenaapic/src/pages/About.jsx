@@ -46,7 +46,7 @@ const About = () => {
       </section>
 
       {/* Bio Section */}
-      <section className="bg-[#FBF7EF] py-20 px-4 md:px-8">
+      <section data-light-bg className="bg-[#FBF7EF] py-20 px-4 md:px-8">
         <div
           ref={bioRef}
           className={`max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center transition-all duration-700 ${

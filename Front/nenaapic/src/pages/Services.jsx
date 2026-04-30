@@ -190,7 +190,7 @@ const Services = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-[#FBF7EF] py-20 px-4 md:px-8">
+      <section data-light-bg className="bg-[#FBF7EF] py-20 px-4 md:px-8">
         <div
           ref={ctaRef}
           className={`max-w-4xl mx-auto text-center transition-all duration-700 ${
