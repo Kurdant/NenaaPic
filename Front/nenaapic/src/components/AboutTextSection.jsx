@@ -42,11 +42,11 @@ const AboutTextSection = () => {
         {/* Two-column text */}
         <div
           ref={textRef}
-          className={`grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 max-w-4xl mx-auto mb-10 transition-all duration-700 delay-200 ${
+          className={`grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 max-w-4xl mx-auto mb-14 transition-all duration-700 delay-200 ${
             textVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}
         >
-          <p className="text-white/75 text-sm md:text-base leading-relaxed text-left font-body">
+          <p className="text-white/75 text-sm md:text-base leading-loose tracking-wide text-left font-body">
             Photographe passionnée basée à Nice, mon travail va au-delà de la simple capture d'images. 
             Chaque photographie est une rencontre — un instant où je ne cherche pas à transformer, 
             mais à révéler une facette de votre réalité, unique, sincère et profondément personnelle.
@@ -54,7 +54,7 @@ const AboutTextSection = () => {
             avec précision. Mon regard, à la fois sensible et instinctif, me guide pour saisir des moments 
             vrais, où les émotions peuvent pleinement s'exprimer.
           </p>
-          <p className="text-white/75 text-sm md:text-base leading-relaxed text-left font-body">
+          <p className="text-white/75 text-sm md:text-base leading-loose tracking-wide text-left font-body">
             Qu'il s'agisse de capturer la beauté d'un mariage, l'intensité d'un portrait, le sport ou 
             l'essence d'une marque, je mets en lumière ce qui vous rend unique. Mon approche mêle une 
             esthétique haut de gamme à une sensibilité contemporaine, pour des images à la fois iconiques 

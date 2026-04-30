@@ -24,7 +24,6 @@ const Header = () => {
     { label: 'HOME', href: '/' },
     { label: 'PORTFOLIO', href: '/portfolio' },
     { label: 'SERVICES', href: '/services' },
-    { label: 'SPORT', href: '/sport' },
     { label: 'À PROPOS', href: '/about' },
     { label: 'CONTACT', href: '/contact' },
   ];
@@ -77,7 +76,7 @@ const Header = () => {
       <Link
         to="/"
         className="fixed top-6 left-6 md:top-8 md:left-10 z-[51] hover:opacity-80 transition-opacity duration-300"
-        style={{ textDecoration: 'none' }}
+        style={{ textDecoration: 'none', mixBlendMode: 'difference' }}
       >
         <img
           src="/images/logov2.png"

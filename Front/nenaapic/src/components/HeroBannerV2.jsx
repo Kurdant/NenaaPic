@@ -10,7 +10,7 @@ const HeroBannerV2 = () => {
   }, []);
 
   return (
-    <section className="snap-section relative h-screen w-full overflow-hidden">
+    <section className="snap-section relative h-dvh w-full overflow-hidden">
       <style>{`
         @keyframes scrollDrop {
           0%   { transform: translateY(-100%); opacity: 0; }
@@ -51,7 +51,7 @@ const HeroBannerV2 = () => {
       />
 
       {/* Bottom editorial layout */}
-      <div className="absolute inset-x-0 bottom-0 px-8 md:px-16 pb-12 md:pb-20 z-10">
+      <div className="absolute inset-x-0 bottom-0 px-8 md:px-16 pb-20 md:pb-20 z-10">
         <div className="flex items-end justify-between gap-8">
 
           {/* LEFT — main text block */}

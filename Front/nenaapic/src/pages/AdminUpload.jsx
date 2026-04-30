@@ -17,7 +17,7 @@ const categories = [
   { id: 'entreprise', label: 'Entreprise', icon: '🏢' },
   { id: 'artistique', label: 'Artistique', icon: '🎨' },
   { id: 'grossesse', label: 'Grossesse', icon: '🤰' },
-  { id: 'famille', label: 'Famille', icon: '👨‍👩‍👧' },
+  { id: 'sport', label: 'Sport', icon: '' },
   { id: 'evenement', label: 'Événement', icon: '🎉' },
 ];
 

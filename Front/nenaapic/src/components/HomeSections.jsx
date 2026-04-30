@@ -343,7 +343,7 @@ const ContactSection = () => {
           LET'S CREATE<br />SOMETHING BEAUTIFUL<br />TOGETHER
         </h2>
 
-        <button className="px-12 py-5 text-xl border-2 border-gray-900 text-gray-900 font-semibold hover:bg-gray-900 hover:text-white transition-all duration-300 hover:scale-105">
+        <button className="px-12 py-5 text-3xl border-2 border-gray-900 text-gray-900 font-semibold hover:bg-gray-900 hover:text-white transition-all duration-300 hover:scale-105">
           CONTACTEZ-MOI
         </button>
 

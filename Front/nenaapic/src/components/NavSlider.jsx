@@ -1,0 +1,143 @@
+import React, { useState, useRef, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+
+const SLIDES = [
+  { label: 'HOME',      href: '/',          image: '/images/backgroundNenaaChargement.PNG' },
+  { label: 'PORTFOLIO', href: '/portfolio', image: '/images/banner_2.JPG' },
+  { label: 'SERVICES',  href: '/services',  image: '/images/image_deco_4.jpg' },
+  { label: 'À PROPOS',  href: '/about',     image: '/images/image_deco_5.jpg' },
+  { label: 'CONTACT',   href: '/contact',   image: '/images/Photo_ecran_chargement.jpg' },
+];
+
+const InstagramIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+    <circle cx="12" cy="12" r="4" />
+    <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
+  </svg>
+);
+
+const NavSlider = () => {
+  const [active, setActive] = useState(0);
+  const navigate = useNavigate();
+  const startX = useRef(null);
+  const isDragging = useRef(false);
+
+  const prev = useCallback(() => setActive(i => (i - 1 + SLIDES.length) % SLIDES.length), []);
+  const next = useCallback(() => setActive(i => (i + 1) % SLIDES.length), []);
+
+  // Touch / mouse drag
+  const onPointerDown = (e) => {
+    startX.current = e.touches ? e.touches[0].clientX : e.clientX;
+    isDragging.current = false;
+  };
+  const onPointerMove = (e) => {
+    if (startX.current === null) return;
+    const x = e.touches ? e.touches[0].clientX : e.clientX;
+    if (Math.abs(x - startX.current) > 8) isDragging.current = true;
+  };
+  const onPointerUp = (e) => {
+    if (startX.current === null) return;
+    const x = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+    const diff = startX.current - x;
+    if (Math.abs(diff) > 40) {
+      diff > 0 ? next() : prev();
+    }
+    startX.current = null;
+  };
+
+  const handleLabelClick = () => {
+    if (!isDragging.current) navigate(SLIDES[active].href);
+  };
+
+  const currentYear = new Date().getFullYear();
+
+  return (
+    <section className="relative w-full h-screen overflow-hidden select-none">
+      {/* Background images stack — only active is visible */}
+      {SLIDES.map((slide, i) => (
+        <div
+          key={slide.href}
+          className="absolute inset-0 transition-opacity duration-700"
+          style={{ opacity: i === active ? 1 : 0, zIndex: i === active ? 1 : 0 }}
+        >
+          <img
+            src={slide.image}
+            alt={slide.label}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.45)' }} />
+        </div>
+      ))}
+
+      {/* Slider — 3 panels visible: prev | active | next */}
+      <div
+        className="absolute inset-0 z-10 flex items-center justify-center"
+        onMouseDown={onPointerDown}
+        onMouseMove={onPointerMove}
+        onMouseUp={onPointerUp}
+        onTouchStart={onPointerDown}
+        onTouchMove={onPointerMove}
+        onTouchEnd={onPointerUp}
+      >
+        {/* Prev label — barely peeking on left */}
+        <button
+          onClick={prev}
+          className="absolute font-heading font-bold uppercase text-white/20 hover:text-white/40 transition-all duration-300 cursor-pointer overflow-hidden"
+          style={{ fontSize: 'clamp(2.8rem, 10vw, 9rem)', letterSpacing: '0.04em', lineHeight: 1, left: 0, transform: 'translateX(-82%)', whiteSpace: 'nowrap' }}
+          aria-label="Précédent"
+        >
+          {SLIDES[(active - 1 + SLIDES.length) % SLIDES.length].label}
+        </button>
+
+        {/* Active label — clickable link */}
+        <button
+          onClick={handleLabelClick}
+          className="font-heading font-bold uppercase text-white text-center transition-all duration-500 cursor-pointer hover:opacity-80 w-[90vw]"
+          style={{ fontSize: 'clamp(2.8rem, 10vw, 9rem)', letterSpacing: '0.04em', lineHeight: 1 }}
+          aria-label={`Aller à ${SLIDES[active].label}`}
+        >
+          {SLIDES[active].label}
+        </button>
+
+        {/* Next label — barely peeking on right */}
+        <button
+          onClick={next}
+          className="absolute font-heading font-bold uppercase text-white/20 hover:text-white/40 transition-all duration-300 cursor-pointer overflow-hidden"
+          style={{ fontSize: 'clamp(2.8rem, 10vw, 9rem)', letterSpacing: '0.04em', lineHeight: 1, right: 0, transform: 'translateX(82%)', whiteSpace: 'nowrap' }}
+          aria-label="Suivant"
+        >
+          {SLIDES[(active + 1) % SLIDES.length].label}
+        </button>
+      </div>
+
+      {/* Bottom bar */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 px-6 md:px-12 py-5 flex items-center justify-between" style={{ borderTop: '1px solid rgba(255,255,255,0.12)' }}>
+        <p className="text-white/40 text-xs tracking-wide font-body">
+          © {currentYear} NenaaPic
+        </p>
+
+        <div className="flex items-center gap-5">
+          <a
+            href="https://www.instagram.com/nenaa_pic/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white/60 hover:text-white transition-colors duration-300"
+            aria-label="Instagram"
+          >
+            <InstagramIcon />
+          </a>
+        </div>
+
+        <a
+          href="mailto:elensapic@gmail.com"
+          className="text-white/40 text-xs tracking-widest uppercase font-body hover:text-white/70 transition-colors duration-300"
+        >
+          elensapic@gmail.com
+        </a>
+      </div>
+    </section>
+  );
+};
+
+export default NavSlider;

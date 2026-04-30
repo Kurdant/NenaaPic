@@ -34,7 +34,7 @@ const LoadingScreen = ({ onComplete }) => {
         fadeOut ? 'opacity-0 scale-[1.02]' : 'opacity-100 scale-100'
       }`}
       style={{
-        backgroundImage: 'url(/images/backgroundNenaaChargement.PNG)',
+        backgroundImage: 'url(/images/Photo_ecran_chargement.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}
@@ -54,7 +54,7 @@ const LoadingScreen = ({ onComplete }) => {
           className="w-20 md:w-24 object-contain"
         />
         <h1
-          className="font-heading uppercase tracking-[0.4em] text-white text-xl md:text-2xl"
+          className="font-heading uppercase tracking-[0.4em] text-white text-xl md:text-2xl text-center"
           style={{ textShadow: '0 2px 12px rgba(0,0,0,0.4)' }}
         >
           NENAAPIC PHOTOGRAPHY

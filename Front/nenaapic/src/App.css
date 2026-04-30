@@ -5,17 +5,12 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Snap scroll for homepage */
 .homepage-snap {
-  scroll-snap-type: y mandatory;
-  overflow-y: scroll;
-  height: 100vh;
-  -webkit-overflow-scrolling: touch;
+  /* snap scroll removed */
 }
 
 .snap-section {
-  scroll-snap-align: start;
-  min-height: 100vh;
+  /* snap scroll removed */
 }
 
 /* Global animation utilities */
