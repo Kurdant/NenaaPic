@@ -5,7 +5,7 @@
 /* Import fonts from Google */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=GFS+Didot&display=swap');
 
-:root {
+:root {  
   /* Couleurs principales */
   --primary-blue: #4A90E2;
   --primary-yellow: #F7DC6F;
