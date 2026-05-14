@@ -1,7 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
-import Footer from './components/Footer';
+import FooterBar from './components/FooterBar';
+import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/Home';
 import About from './pages/About';
@@ -11,15 +12,16 @@ import Contact from './pages/Contact';
 import AdminUpload from './pages/AdminUpload';
 import LoginPage from './pages/LoginPage';
 import Sport from './pages/Sport';
+import RGPD from './pages/RGPD';
 import './App.css';
 
 const AppContent = () => {
   const location = useLocation();
-  const isHome = location.pathname === '/';
   const isLogin = location.pathname === '/login';
 
   return (
-    <div className="App">
+    <div className="App relative">
+      <ScrollToTop />
       {!isLogin && <Header />}
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -28,6 +30,7 @@ const AppContent = () => {
         <Route path="/portfolio" element={<Portfolio />} />
         <Route path="/sport" element={<Sport />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/rgpd" element={<RGPD />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/admin" element={
           <ProtectedRoute>
@@ -35,7 +38,7 @@ const AppContent = () => {
           </ProtectedRoute>
         } />
       </Routes>
-      {!isHome && !isLogin && <Footer />}
+      {!isLogin && <FooterBar />}
     </div>
   );
 };

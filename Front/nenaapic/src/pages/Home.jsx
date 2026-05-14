@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import LoadingScreen from '../components/LoadingScreen';
 import HeroBannerV2 from '../components/HeroBannerV2';
+import HeroBanner from '../components/HeroBanner';
 import AboutTextSection from '../components/AboutTextSection';
-import PortfolioSlider from '../components/PortfolioSlider';
+import PortfolioAlbums from '../components/PortfolioAlbums';
 import NavSlider from '../components/NavSlider';
 
 const HomePage = () => {
@@ -14,8 +15,9 @@ const HomePage = () => {
       {loading && <LoadingScreen onComplete={handleLoadingComplete} />}
       <div className={loading ? 'overflow-hidden h-screen' : ''}>
         <HeroBannerV2 />
+        <HeroBanner />
         <AboutTextSection />
-        <PortfolioSlider />
+        <PortfolioAlbums />
         <NavSlider />
       </div>
     </>

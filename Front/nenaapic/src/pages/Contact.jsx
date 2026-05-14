@@ -218,10 +218,10 @@ const Contact = () => {
               <div>
                 <p className="font-body text-white/40 text-xs uppercase tracking-[0.2em] mb-2">Email</p>
                 <a
-                  href="mailto:elensapic@gmail.com"
+                  href="mailto:nenaapic@gmail.com"
                   className="font-body text-white text-base hover:text-white/60 transition-colors duration-300"
                 >
-                  elensapic@gmail.com
+                  nenaapic@gmail.com
                 </a>
               </div>
               <div>
@@ -242,23 +242,6 @@ const Contact = () => {
       </section>
 
       {/* ── BOTTOM BAR ── */}
-      <div className="bg-black border-t border-white/10 px-8 md:px-16 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-        <a
-          href="https://www.instagram.com/nenaa_pic/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 font-body text-xs uppercase tracking-[0.25em] text-white/50 hover:text-white transition-colors duration-300"
-        >
-          <InstagramIcon />
-          NOTRE INSTAGRAM ↗
-        </a>
-        <a
-          href="mailto:elensapic@gmail.com"
-          className="font-body text-xs text-white/30 hover:text-white/60 transition-colors duration-300 tracking-wide"
-        >
-          elensapic@gmail.com
-        </a>
-      </div>
     </div>
   );
 };

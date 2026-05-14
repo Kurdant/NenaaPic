@@ -353,7 +353,7 @@ const ContactSection = () => {
             <span className="text-lg font-medium">Instagram</span>
           </a>
           <span className="text-gray-400">|</span>
-          <a href="mailto:contact@nenaapic.com" className="text-gray-700 hover:text-gray-900 transition-colors">
+          <a href="mailto:nenaapic@gmail.com" className="text-gray-700 hover:text-gray-900 transition-colors">
             <span className="text-lg font-medium">Email</span>
           </a>
           <span className="text-gray-400">|</span>

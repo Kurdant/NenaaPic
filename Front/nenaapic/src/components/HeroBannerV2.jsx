@@ -39,17 +39,6 @@ const HeroBannerV2 = () => {
         }}
       />
 
-      {/* Yellow accent strip — grows left to right on load */}
-      <div
-        className="absolute bottom-0 left-0 h-[3px]"
-        style={{
-          backgroundColor: '#F4D35E',
-          width: loaded ? '100%' : '0%',
-          transition: 'width 1.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          transitionDelay: '0.9s',
-        }}
-      />
-
       {/* Bottom editorial layout */}
       <div className="absolute inset-x-0 bottom-[max(env(safe-area-inset-bottom),5rem)] md:bottom-0 px-8 md:px-16 md:pb-20 z-10">
         <div className="flex items-end justify-between gap-8">

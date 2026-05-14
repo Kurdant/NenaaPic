@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import useScrollAnimation from '../hooks/useScrollAnimation';
 import { apiUrl } from '../utils/api';
 
@@ -139,12 +139,24 @@ const CategoryCard = ({ category, index, onSelect }) => {
 
 
 const Portfolio = () => {
-  const [activeCategory, setActiveCategory] = useState(null); // null = grid view
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryFromUrl = searchParams.get('category');
+  const [activeCategory, setActiveCategory] = useState(categoryFromUrl); // null = grid view
   const [heroVisible, setHeroVisible] = useState(false);
   const [portfolioItems, setPortfolioItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lightboxItem, setLightboxItem] = useState(null);
   const [ctaRef, ctaVisible] = useScrollAnimation();
+
+  // Sync active category with URL
+  const selectCategory = useCallback((slug) => {
+    setActiveCategory(slug);
+    if (slug) {
+      setSearchParams({ category: slug });
+    } else {
+      setSearchParams({});
+    }
+  }, [setSearchParams]);
 
   useEffect(() => {
     const timer = setTimeout(() => setHeroVisible(true), 100);
@@ -152,20 +164,31 @@ const Portfolio = () => {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+    const controller = new AbortController();
+    const safetyTimeout = setTimeout(() => controller.abort(), 12000);
+
     const fetchGallery = async () => {
       try {
-        const res = await fetch(apiUrl('/api/gallery'));
+        const res = await fetch(apiUrl('/api/gallery'), { signal: controller.signal });
         const data = await res.json();
-        if (data.success) {
+        if (!cancelled && data.success && Array.isArray(data.images)) {
           setPortfolioItems(data.images);
         }
       } catch (err) {
-        console.error('Erreur chargement galerie:', err);
+        if (!cancelled) console.error('Erreur chargement galerie:', err);
       } finally {
-        setLoading(false);
+        clearTimeout(safetyTimeout);
+        if (!cancelled) setLoading(false);
       }
     };
     fetchGallery();
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+      clearTimeout(safetyTimeout);
+    };
   }, []);
 
   // Reset scroll when switching views
@@ -229,7 +252,7 @@ const Portfolio = () => {
               key={cat.id}
               category={cat}
               index={index}
-              onSelect={() => setActiveCategory(cat.id)}
+              onSelect={() => selectCategory(cat.id)}
             />
           ))}
         </section>
@@ -240,7 +263,7 @@ const Portfolio = () => {
             {/* Back button */}
             <div className="mb-10 flex items-center justify-between">
               <button
-                onClick={() => setActiveCategory(null)}
+                onClick={() => selectCategory(null)}
                 className="font-heading font-bold text-sm tracking-[0.25em] uppercase text-white/60 hover:text-white transition-colors duration-300 flex items-center gap-2"
               >
                 ← Retour
@@ -250,7 +273,7 @@ const Portfolio = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 min-[400px]:grid-cols-2 min-[1000px]:grid-cols-3 min-[1200px]:grid-cols-4 gap-4">
               {filteredItems.map((item, index) => (
                 <PortfolioCard key={item.id} item={item} index={index} onOpen={setLightboxItem} />
               ))}

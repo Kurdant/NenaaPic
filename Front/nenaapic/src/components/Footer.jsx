@@ -12,7 +12,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full bg-neutral-black border-t border-white/10">
+    <footer className="w-full bg-neutral-black">
       <div className="max-w-container mx-auto px-4 md:px-8 py-6 md:py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
           <div className="text-center md:text-left">
@@ -37,21 +37,21 @@ const Footer = () => {
               <InstagramIcon />
             </a>
             <a
-              href="mailto:elensapic@gmail.com"
+              href="mailto:nenaapic@gmail.com"
               className="text-white/40 text-xs hover:text-white/70 transition-colors duration-300 tracking-wide"
             >
-              elensapic@gmail.com
+              nenaapic@gmail.com
             </a>
           </div>
 
           <div className="text-center md:text-right">
-            <p className="text-white/50 text-sm">
-              Made by{' '}
+            <p className="text-white/40 text-xs tracking-wide">
+              Site fait par{' '}
               <a
                 href="https://kurdant.fr"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary-yellow hover:text-white transition-colors duration-300"
+                className="text-white/70 hover:text-white transition-colors duration-300"
               >
                 KurdantDev
               </a>

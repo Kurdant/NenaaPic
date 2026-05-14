@@ -50,8 +50,6 @@ const NavSlider = () => {
     if (!isDragging.current) navigate(SLIDES[active].href);
   };
 
-  const currentYear = new Date().getFullYear();
-
   return (
     <section className="relative w-full h-screen overflow-hidden select-none">
       {/* Background images stack — only active is visible */}
@@ -76,6 +74,7 @@ const NavSlider = () => {
         onMouseDown={onPointerDown}
         onMouseMove={onPointerMove}
         onMouseUp={onPointerUp}
+        onMouseLeave={onPointerUp}
         onTouchStart={onPointerDown}
         onTouchMove={onPointerMove}
         onTouchEnd={onPointerUp}
@@ -111,31 +110,7 @@ const NavSlider = () => {
         </button>
       </div>
 
-      {/* Bottom bar */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 px-6 md:px-12 py-5 flex items-center justify-between" style={{ borderTop: '1px solid rgba(255,255,255,0.12)' }}>
-        <p className="text-white/40 text-xs tracking-wide font-body">
-          © {currentYear} NenaaPic
-        </p>
 
-        <div className="flex items-center gap-5">
-          <a
-            href="https://www.instagram.com/nenaa_pic/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white/60 hover:text-white transition-colors duration-300"
-            aria-label="Instagram"
-          >
-            <InstagramIcon />
-          </a>
-        </div>
-
-        <a
-          href="mailto:elensapic@gmail.com"
-          className="text-white/40 text-xs tracking-widest uppercase font-body hover:text-white/70 transition-colors duration-300"
-        >
-          elensapic@gmail.com
-        </a>
-      </div>
     </section>
   );
 };
