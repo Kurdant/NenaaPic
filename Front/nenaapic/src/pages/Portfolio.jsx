@@ -273,7 +273,7 @@ const Portfolio = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 min-[400px]:grid-cols-2 min-[1000px]:grid-cols-3 min-[1200px]:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredItems.map((item, index) => (
                 <PortfolioCard key={item.id} item={item} index={index} onOpen={setLightboxItem} />
               ))}
